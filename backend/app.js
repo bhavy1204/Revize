@@ -20,11 +20,10 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // Routes
-
+import healthCheckRouter from "./src/routes/HealthCheck.route";
 
 // Routes Declaration
-
-
+app.use("api/v1/healthCheck", healthCheckRouter);
 
 export {app};
 
