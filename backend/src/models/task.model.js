@@ -34,7 +34,7 @@ const taskSchema = new mongoose.Schema({
 
 taskSchema.index({
     creator:1,
-    "revisions.scheduleAt":1,
+    "revisions.scheduledAt":1,
     "revisions.completedAt":1
 })
 
