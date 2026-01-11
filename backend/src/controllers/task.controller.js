@@ -4,6 +4,7 @@ import { User } from "../models/user.model";
 import { APIError } from "../utils/APIError";
 import { APIResponse } from "../utils/APIResponse";
 import { asyncHandler } from "../utils/AsyncHandler";
+import { cleanupCompletedTask } from "../utils/taskCleanup";
 
 
 const createTask = asyncHandler(async (req, res) => {
@@ -127,12 +128,17 @@ const completeRevision = asyncHandler(async (req, res) => {
             $set: {
                 "revisions.$.completedAt": new Date()
             }
+        },
+        {
+            new: true
         }
     )
 
     if (!updated) {
         throw new APIError(401, isTaskValid, "revision not scheduled for today")
     }
+
+    await cleanupCompletedTask(taskId, creator);
 
     return res.status(200).json(
         new APIResponse(200, updated, "Revison completed successfully")
