@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { createTask, getTodaysRevision, getAllPendingRevision, completeRevision, deleteTask } from "../controllers/task.controller.js"
+import { verifyJwt } from "../middleware/auth.middleware.js";
 
 const router = Router();
+
+// All routes below this line will use the verifyJwt middleware
+router.use(verifyJwt);
 
 router.route("/create-task").post(createTask)
 router.route("/get/today-revision").get(getTodaysRevision)

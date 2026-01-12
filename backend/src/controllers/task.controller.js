@@ -25,6 +25,7 @@ const createTask = asyncHandler(async (req, res) => {
 
     const revisionGaps = [1, 3, 7, 14, 30, 60];
     const baseDate = new Date(startDate);
+    // console.log("Base Date from Frontend:", startDate, "Parsed as:", baseDate); // DEBUG
 
     const revisions = revisionGaps.map((gap) => {
         // reset base
@@ -34,6 +35,7 @@ const createTask = asyncHandler(async (req, res) => {
         scheduledAt.setDate(scheduledAt.getDate() + gap);
 
         // update revision obj
+        // console.log(`Revision for gap ${gap}:`, scheduledAt); // DEBUG
         return {
             scheduledAt,
             completedAt: null
@@ -82,7 +84,7 @@ const getTodaysRevision = asyncHandler(async (req, res) => {
 
     if (todaysRevisions.length === 0) {
         return res.status(200).json(
-            new APIResponse(200, "No revesion scheduuled today")
+            new APIResponse(200, [], "No revision scheduled today")
         )
     }
 
@@ -162,7 +164,7 @@ const getAllPendingRevision = asyncHandler(async (req, res) => {
 
     if (pendingRevisions.length === 0) {
         return res.status(200).json(
-            new APIResponse(200, "No Pending revisions")
+            new APIResponse(200, [], "No Pending revisions")
         )
     }
 
