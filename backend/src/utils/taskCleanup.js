@@ -1,4 +1,4 @@
-import { Task } from "../models/task.model";
+import { Task } from "../models/task.model.js";
 
 
 const cleanupCompletedTask = async (taskId, creatorId) => {

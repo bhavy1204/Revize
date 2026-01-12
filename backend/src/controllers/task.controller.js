@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-import { Task } from "../models/task.model";
-import { User } from "../models/user.model";
-import { APIError } from "../utils/APIError";
-import { APIResponse } from "../utils/APIResponse";
-import { asyncHandler } from "../utils/AsyncHandler";
-import { cleanupCompletedTask } from "../utils/taskCleanup";
+import { Task } from "../models/task.model.js";
+import { APIError } from "../utils/APIError.js";
+import { APIResponse } from "../utils/APIResponse.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
+import { cleanupCompletedTask } from "../utils/taskCleanup.js";
 
 
 const createTask = asyncHandler(async (req, res) => {

@@ -1,8 +1,8 @@
-import { Task } from "../models/task.model";
-import { User } from "../models/user.model";
-import { asyncHandler } from "../utils/AsyncHandler";
-import { APIResponse } from "../utils/APIResponse";
-import { APIError } from "../utils/APIError";
+import { Task } from "../models/task.model.js";
+import { User } from "../models/user.model.js";
+import { asyncHandler } from "../utils/AsyncHandler.js";
+import { APIResponse } from "../utils/APIResponse.js";
+import { APIError } from "../utils/APIError.js";
 
 const exportPrintableRevisions = asyncHandler(async (req, res) => {
     const creator = req.user?._id;
@@ -39,3 +39,4 @@ const exportPrintableRevisions = asyncHandler(async (req, res) => {
     );
 });
 
+export {exportPrintableRevisions}
