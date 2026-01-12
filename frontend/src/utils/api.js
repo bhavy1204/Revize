@@ -124,11 +124,36 @@ class ApiCLient {
 
     // utility
 
-    async exportToPdf(){
-        return this.request("/utility/export-to-pdf",{
-            method:'GET',
-        })
+    async exportToPdf() {
+        const url = `${this.baseURL}/utility/export-to-pdf`;
+        const config = {
+            method: 'GET',
+            credentials: "include", // Ensure cookies are sent
+        };
+
+        try {
+            const res = await fetch(url, config);
+
+            if (!res.ok) {
+                // If response is not OK, attempt to read error as text/JSON
+                const errorBody = await res.text();
+                try {
+                    const errorData = JSON.parse(errorBody);
+                    throw new Error(errorData.message || `PDF export failed with status: ${res.status}`);
+                } catch (e) {
+                    // If it's not valid JSON, just throw the raw text or status
+                    throw new Error(`PDF export failed with status: ${res.status}. Response: ${errorBody || res.statusText}`);
+                }
+            }
+
+            // If response is OK, it must be the PDF blob
+            return res.blob();
+        } catch (error) {
+            console.error("Error during PDF export fetch:", error);
+            throw error; // Re-throw the error for frontend to handle
+        }
     }
 
-
 }
+
+export default ApiCLient;
