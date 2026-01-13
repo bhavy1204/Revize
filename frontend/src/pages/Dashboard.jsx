@@ -10,7 +10,14 @@ const apiClient = new ApiCLient();
 const Dashboard = () => {
   const [todayRevisions, setTodayRevisions] = useState([]);
   const [allPendingRevisions, setAllPendingRevisions] = useState([]);
-  const [showAllPending, setShowAllPending] = useState(false);
+  const [showAllPending, setShowAllPending] = useState(() => {
+    try {
+      const v = localStorage.getItem('showAllPending');
+      return v === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
   const [error, setError] = useState('');
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false); // State for modal visibility
@@ -39,6 +46,25 @@ const Dashboard = () => {
       fetchTasks();
     }
   }, [isLoggedIn]); // Re-fetch tasks when login status changes
+
+  // Listen for changes to the showAllPending preference set in Settings
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const v = localStorage.getItem('showAllPending');
+        setShowAllPending(v === 'true');
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    window.addEventListener('showAllPendingChange', handler);
+    window.addEventListener('storage', handler);
+    return () => {
+      window.removeEventListener('showAllPendingChange', handler);
+      window.removeEventListener('storage', handler);
+    };
+  }, []);
 
   const handleCompleteRevision = async (taskId) => {
     try {
@@ -80,8 +106,8 @@ const Dashboard = () => {
         </div>
 
         {showAddTaskModal && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+          <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md text-gray-100">
               <AddTaskForm
                 onClose={() => setShowAddTaskModal(false)}
                 onTaskAdded={fetchTasks}
@@ -97,11 +123,11 @@ const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {todayRevisions.map((task) => (
-                <div key={task._id} className="bg-white p-4 rounded-lg shadow">
+                <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
                   <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
-                  <p className="text-gray-600 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Link</a></p>
+                  <p className="text-gray-300 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Link</a></p>
                   {task.revisions && task.revisions.length > 0 && (
-                    <p className="text-gray-500 text-sm mb-4">
+                    <p className="text-gray-400 text-sm mb-4">
                       Start Date: {new Date(task.revisions[0].scheduledAt).toLocaleDateString()}
                     </p>
                   )}
@@ -128,26 +154,17 @@ const Dashboard = () => {
         </div>
 
         <div>
-          <h3 className="text-2xl font-semibold mb-4 flex justify-between items-center">
-            All Pending Revisions
-            <Button
-              variant="secondary"
-              onClick={() => setShowAllPending(!showAllPending)}
-              className="text-sm"
-            >
-              {showAllPending ? 'Hide' : 'Show'}
-            </Button>
-          </h3>
+          <h3 className="text-2xl font-semibold mb-4">All Pending Revisions</h3>
           {showAllPending && (allPendingRevisions.length === 0 ? (
             <p>No pending revisions.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {allPendingRevisions.map((task) => (
-                <div key={task._id} className="bg-white p-4 rounded-lg shadow">
+                <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
                   <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
-                  <p className="text-gray-600 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Link</a></p>
+                  <p className="text-gray-300 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Link</a></p>
                   {task.revisions && task.revisions.length > 0 && (
-                    <p className="text-gray-500 text-sm mb-4">
+                    <p className="text-gray-400 text-sm mb-4">
                       Start Date: {
                         new Date(task.revisions[0].scheduledAt).toString() !== 'Invalid Date'
                           ? new Date(task.revisions[0].scheduledAt).toLocaleDateString()

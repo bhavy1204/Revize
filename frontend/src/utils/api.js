@@ -108,6 +108,12 @@ class ApiCLient {
         })
     }
 
+    async getAllUpcomingRevisions(){
+        return this.request("/task/get/all-upcoming-revision",{
+            method:'GET'
+        })
+    }
+
     async completeRevision(taskId) {
         return this.request("/task/complete-revision", {
             method: 'PATCH',
