@@ -1,7 +1,10 @@
 import { Router } from "express";
 import {registerUser, loginUser, authMe, logout, refreshToken, changePassword, getCurrentUser, deleteAccount} from "../controllers/user.controller.js"
+import { verifyJwt } from "../middleware/auth.middleware.js";
 
 const router = Router()
+
+router.use(verifyJwt);
 
 router.route("/register").post(registerUser)
 router.route("/login").post(loginUser)

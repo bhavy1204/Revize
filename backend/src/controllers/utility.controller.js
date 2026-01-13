@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { APIResponse } from "../utils/APIResponse.js";
 import { APIError } from "../utils/APIError.js";
+import PDFDocument from "pdfkit"
 
 const exportPrintableRevisions = asyncHandler(async (req, res) => {
     const creator = req.user?._id;
@@ -34,13 +35,70 @@ const exportPrintableRevisions = asyncHandler(async (req, res) => {
         };
     });
 
-    // THIS IS A PLACEHOLDER FOR ACTUAL PDF GENERATION
-    // You would typically use a library like 'pdfkit' or 'html-pdf' here
-    // For now, we'll send a dummy PDF response to resolve the frontend error
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="revisions.pdf"');
-    // Send some dummy binary data that represents a PDF
-    res.status(200).send(Buffer.from("%PDF-1.1\n1 0 obj<</Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Count 0>>endobj%%EOF"));
+    // Create PDF
+    const doc = new PDFDocument({
+        margin: 40,
+        size: "A4"
+    });
+
+    // Headers
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="revisions.pdf"'
+    );
+
+    // Pipe PDF → response
+    doc.pipe(res);
+
+    // Title
+    doc
+        .fontSize(24)
+        .text("Pending Revisions", { align: "center" });
+
+    doc.moveDown(1.5);
+
+    // Body
+    printableData.forEach((task, index) => {
+        doc
+            .fontSize(14)
+            .text(`${index + 1}. ${task.heading}`, {
+                underline: true
+            });
+
+        if (task.link) {
+            doc
+                .fontSize(11)
+                .fillColor("blue")
+                .text(task.link, {
+                    link: task.link
+                })
+                .fillColor("black");
+        }
+
+        doc.moveDown(0.5);
+
+        if (task.revisions.length === 0) {
+            doc
+                .fontSize(11)
+                .text("No pending revisions 🎉");
+        } else {
+            task.revisions.forEach((rev, i) => {
+                doc
+                    .fontSize(11)
+                    .text(
+                        `• Revision ${i + 1}: ${new Date(
+                            rev.scheduledAt
+                        ).toLocaleString()}`
+                    );
+            });
+        }
+
+        doc.moveDown();
+    });
+
+    // Finish PDF
+    doc.end();
 });
 
-export {exportPrintableRevisions}
+export { exportPrintableRevisions }
