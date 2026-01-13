@@ -8,7 +8,8 @@ const apiClient = new ApiCLient();
 const AddTaskForm = ({ onClose, onTaskAdded }) => {
   const [heading, setHeading] = useState('');
   const [link, setLink] = useState('');
-  const [startDate, setStartDate] = useState(''); // YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+  const [startDate, setStartDate] = useState(today); // YYYY-MM-DD format
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -35,8 +36,8 @@ const AddTaskForm = ({ onClose, onTaskAdded }) => {
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <h3 className="text-xl font-bold mb-4">Add New Task</h3>
+    <div className="p-4 bg-gray-800 rounded-lg shadow-md text-gray-100">
+      <h3 className="text-xl font-bold mb-4 text-gray-100">Add New Task</h3>
       {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
       <form onSubmit={handleSubmit}>
         <InputField
@@ -46,6 +47,8 @@ const AddTaskForm = ({ onClose, onTaskAdded }) => {
           value={heading}
           onChange={(e) => setHeading(e.target.value)}
           required
+          className="bg-gray-700 text-gray-100 border-gray-600"
+          labelClassName="text-gray-200"
         />
         <InputField
           label="Link (Optional)"
@@ -53,6 +56,8 @@ const AddTaskForm = ({ onClose, onTaskAdded }) => {
           type="url"
           value={link}
           onChange={(e) => setLink(e.target.value)}
+          className="bg-gray-700 text-gray-100 border-gray-600"
+          labelClassName="text-gray-200"
         />
         <InputField
           label="Start Date"
@@ -61,6 +66,8 @@ const AddTaskForm = ({ onClose, onTaskAdded }) => {
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           required
+          className="bg-gray-700 text-gray-100 border-gray-600"
+          labelClassName="text-gray-200"
         />
         <div className="flex justify-end space-x-2 mt-4">
           <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>

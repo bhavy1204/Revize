@@ -16,7 +16,7 @@ const Button = ({
       variantStyles = 'bg-blue-500 hover:bg-blue-700 text-white';
       break;
     case 'secondary':
-      variantStyles = 'bg-gray-300 hover:bg-gray-400 text-gray-800';
+      variantStyles = 'bg-gray-600 hover:bg-gray-500 text-white';
       break;
     case 'danger':
       variantStyles = 'bg-red-600 hover:bg-red-700 text-white';
