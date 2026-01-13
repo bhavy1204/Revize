@@ -4,12 +4,13 @@ import { APIError } from "../utils/APIError.js";
 import { APIResponse } from "../utils/APIResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { cleanupCompletedTask } from "../utils/taskCleanup.js";
+import { User } from "../models/user.model.js";
 
 
 const createTask = asyncHandler(async (req, res) => {
 
     const creator = req.user?._id;
-    const { heading, link, startDate } = req.body
+    const { heading, link, startDate, description } = req.body
 
     if (!heading) {
         throw new APIError(400, "heading required")
@@ -23,9 +24,15 @@ const createTask = asyncHandler(async (req, res) => {
         throw new APIError(400, "Start date required")
     }
 
+    const user = await User.findById(creator);
+
+    if (user.taskCount >= 500) {
+        throw new APIError(403, user.taskCount, "Free plan limit reached")
+    }
+
     const revisionGaps = [1, 3, 7, 14, 30, 60];
     const baseDate = new Date(startDate);
-    // console.log("Base Date from Frontend:", startDate, "Parsed as:", baseDate); // DEBUG
+    // console.log("Base Date from Frontend:", startDate, "Parsed as:", baseDate);
 
     const revisions = revisionGaps.map((gap) => {
         // reset base
@@ -35,7 +42,7 @@ const createTask = asyncHandler(async (req, res) => {
         scheduledAt.setDate(scheduledAt.getDate() + gap);
 
         // update revision obj
-        // console.log(`Revision for gap ${gap}:`, scheduledAt); // DEBUG
+        // console.log(`Revision for gap ${gap}:`, scheduledAt);
         return {
             scheduledAt,
             completedAt: null
@@ -47,8 +54,12 @@ const createTask = asyncHandler(async (req, res) => {
         creator,
         heading,
         link,
+        description,
         revisions
     })
+
+    user.taskCount = user.taskCount + 1;
+    await user.save({ validateBeforeSave: false });
 
     res.status(200).json(
         new APIResponse(200, task, "task created successfully")
@@ -118,7 +129,6 @@ const completeRevision = asyncHandler(async (req, res) => {
         revisions: {
             $elemMatch: {
                 scheduledAt: {
-                    $gte: startofDay,
                     $lte: endOfDay
                 },
                 completedAt: null
@@ -136,7 +146,7 @@ const completeRevision = asyncHandler(async (req, res) => {
     )
 
     if (!updated) {
-        throw new APIError(401, isTaskValid, "revision not scheduled for today")
+        throw new APIError(401, updated, "revision not scheduled for today")
     }
 
     await cleanupCompletedTask(taskId, creator);
@@ -153,15 +163,15 @@ const getAllPendingRevision = asyncHandler(async (req, res) => {
         throw new APIError(400, "Creator ID required")
     }
 
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
     const pendingRevisions = await Task.find({
         creator: creator,
         revisions: {
             $elemMatch: {
                 scheduledAt: {
-                    $lte: endOfDay
+                    $lte: startOfDay
                 },
                 completedAt: null
             }
@@ -237,6 +247,12 @@ const deleteTask = asyncHandler(async (req, res) => {
         if (!deletedTask) {
             throw new APIError(500, "Some error while deleting task")
         }
+
+        const user = await User.findById(creator);
+
+        user.taskCount = Math.max(0, user.taskCount - 1);
+        await user.save({ validateBeforeSave: false })
+
         return res.status(200).json(
             new APIResponse(200, "Task deleted successfully")
         )

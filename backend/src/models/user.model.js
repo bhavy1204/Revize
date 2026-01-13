@@ -27,6 +27,19 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Password required"]
     },
+    taskCount:{
+        type:Number,
+        default:0
+    },
+    plan:{
+        type:String,
+        enum:["free","pro"],
+        default:"free"
+    },
+    subscriptionExpiryDate:{
+        type:Date,
+        default:null
+    },
     refreshToken: {
         type: String,
     }
