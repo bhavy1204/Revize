@@ -153,10 +153,49 @@ const getAllPendingRevision = asyncHandler(async (req, res) => {
         throw new APIError(400, "Creator ID required")
     }
 
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
     const pendingRevisions = await Task.find({
         creator: creator,
         revisions: {
             $elemMatch: {
+                scheduledAt: {
+                    $lte: endOfDay
+                },
+                completedAt: null
+            }
+        }
+    });
+
+    if (pendingRevisions.length === 0) {
+        return res.status(200).json(
+            new APIResponse(200, [], "No Pending revisions")
+        )
+    }
+
+    return res.status(200).json(
+        new APIResponse(200, pendingRevisions, "All pending revisions fetched successfully")
+    )
+})
+
+const getAllUpcomingRevision = asyncHandler(async (req, res) => {
+    const creator = req.user?._id
+
+    if (!creator) {
+        throw new APIError(400, "Creator ID required")
+    }
+
+    const endOfDay = new Date()
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const pendingRevisions = await Task.find({
+        creator: creator,
+        revisions: {
+            $elemMatch: {
+                scheduledAt: {
+                    $gte: endOfDay
+                },
                 completedAt: null
             }
         }
@@ -213,6 +252,7 @@ export {
     createTask,
     getTodaysRevision,
     getAllPendingRevision,
+    getAllUpcomingRevision,
     completeRevision,
     deleteTask,
 

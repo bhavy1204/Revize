@@ -4,10 +4,10 @@ import { verifyJwt } from "../middleware/auth.middleware.js";
 
 const router = Router()
 
-router.use(verifyJwt);
 
 router.route("/register").post(registerUser)
 router.route("/login").post(loginUser)
+router.use(verifyJwt);
 router.route("/authMe").get(authMe)
 router.route("/logout").post(logout)
 router.route("/refresh-token").get(refreshToken)

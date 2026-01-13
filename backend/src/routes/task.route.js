@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTask, getTodaysRevision, getAllPendingRevision, completeRevision, deleteTask } from "../controllers/task.controller.js"
+import { createTask, getTodaysRevision, getAllPendingRevision, getAllUpcomingRevision, completeRevision, deleteTask } from "../controllers/task.controller.js"
 import { verifyJwt } from "../middleware/auth.middleware.js";
 
 const router = Router();
@@ -10,6 +10,7 @@ router.use(verifyJwt);
 router.route("/create-task").post(createTask)
 router.route("/get/today-revision").get(getTodaysRevision)
 router.route("/get/all-pending-revision").get(getAllPendingRevision)
+router.route("/get/all-upcoming-revision").get(getAllUpcomingRevision)
 router.route("/complete-revision").patch(completeRevision)
 router.route("/delete-task").delete(deleteTask)
 
