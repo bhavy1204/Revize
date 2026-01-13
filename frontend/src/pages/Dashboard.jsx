@@ -10,9 +10,18 @@ const apiClient = new ApiCLient();
 const Dashboard = () => {
   const [todayRevisions, setTodayRevisions] = useState([]);
   const [allPendingRevisions, setAllPendingRevisions] = useState([]);
+  const [upcomingRevisions, setUpcomingRevisions] = useState([]);
   const [showAllPending, setShowAllPending] = useState(() => {
     try {
       const v = localStorage.getItem('showAllPending');
+      return v === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+  const [showUpcoming, setShowUpcoming] = useState(() => {
+    try {
+      const v = localStorage.getItem('showAllUpcoming');
       return v === 'true';
     } catch (e) {
       return false;
@@ -34,6 +43,9 @@ const Dashboard = () => {
 
       const allPendingData = await apiClient.getAllPendingRevision();
       setAllPendingRevisions(allPendingData.data || []);
+
+      const upcomingData = await apiClient.getAllUpcomingRevisions();
+      setUpcomingRevisions(upcomingData.data || []);
     } catch (err) {
       setError(err.message || 'Failed to fetch tasks');
     } finally {
@@ -58,11 +70,24 @@ const Dashboard = () => {
       }
     };
 
+    const upcomingHandler = () => {
+      try {
+        const v = localStorage.getItem('showAllUpcoming');
+        setShowUpcoming(v === 'true');
+      } catch (e) {
+        // ignore
+      }
+    };
+
     window.addEventListener('showAllPendingChange', handler);
+    window.addEventListener('showAllUpcomingChange', upcomingHandler);
     window.addEventListener('storage', handler);
+    window.addEventListener('storage', upcomingHandler);
     return () => {
       window.removeEventListener('showAllPendingChange', handler);
+      window.removeEventListener('showAllUpcomingChange', upcomingHandler);
       window.removeEventListener('storage', handler);
+      window.removeEventListener('storage', upcomingHandler);
     };
   }, []);
 
@@ -153,11 +178,12 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div>
-          <h3 className="text-2xl font-semibold mb-4">All Pending Revisions</h3>
-          {showAllPending && (allPendingRevisions.length === 0 ? (
-            <p>No pending revisions.</p>
-          ) : (
+
+        {showAllPending && (allPendingRevisions.length === 0 ? (
+          <p>No pending revisions.</p>
+        ) : (
+          <div>
+            <h3 className="text-2xl font-semibold mb-4">Your Pending Revisions</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {allPendingRevisions.map((task) => (
                 <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
@@ -172,7 +198,14 @@ const Dashboard = () => {
                       }
                     </p>
                   )}
-                  <div className="flex justify-end">
+                  <div className="flex justify-between">
+                    <Button
+                      variant="success"
+                      onClick={() => handleCompleteRevision(task._id)}
+                      className="text-sm"
+                    >
+                      Complete
+                    </Button>
                     <Button
                       variant="danger"
                       onClick={() => handleDeleteTask(task._id)}
@@ -184,8 +217,36 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+
+
+
+
+        {showUpcoming && (upcomingRevisions.length === 0 ? (
+          <p>No upcoming revisions.</p>
+        ) : (
+          <div>
+            <h3 className="text-2xl font-semibold mb-4">Your Upcoming Revisions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {upcomingRevisions.map((task) => (
+                <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
+                  <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
+                  <p className="text-gray-300 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Link</a></p>
+                  {task.revisions && task.revisions.length > 0 && (
+                    <p className="text-gray-400 text-sm mb-4">
+                      Start Date: {
+                        new Date(task.revisions[0].scheduledAt).toString() !== 'Invalid Date'
+                          ? new Date(task.revisions[0].scheduledAt).toLocaleDateString()
+                          : 'N/A'
+                      }
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

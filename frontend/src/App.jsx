@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
   const { isLoggedIn, loading } = useAuth();
 
   if (loading) {
-    return <p className="text-center mt-8">Loading authentication...</p>; // Or a spinner component
+    return <p className="text-center mt-8">Loading authentication...</p>;
   }
 
   if (!isLoggedIn) {
