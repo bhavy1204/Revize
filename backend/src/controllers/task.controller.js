@@ -5,6 +5,7 @@ import { APIResponse } from "../utils/APIResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { cleanupCompletedTask } from "../utils/taskCleanup.js";
 import { User } from "../models/user.model.js";
+import { uploadToCloudinary } from "../utils/cloudinary.js"
 
 
 const createTask = asyncHandler(async (req, res) => {
@@ -22,6 +23,15 @@ const createTask = asyncHandler(async (req, res) => {
 
     if (!startDate) {
         throw new APIError(400, "Start date required")
+    }
+
+    // images/pdf uploads
+    const documentLocalFilePath = req.file?.path;
+
+    let uploadedDocument = null;
+
+    if (documentLocalFilePath) {
+        uploadedDocument = await uploadToCloudinary(documentLocalFilePath);
     }
 
     const user = await User.findById(creator);
@@ -54,6 +64,7 @@ const createTask = asyncHandler(async (req, res) => {
         creator,
         heading,
         link,
+        document: uploadedDocument ? { url: uploadedDocument.url, publicId: uploadedDocument.public_id } : null,
         description,
         revisions
     })

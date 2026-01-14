@@ -1,5 +1,6 @@
 import { Task } from "../models/task.model.js";
 import { User } from "../models/user.model.js";
+import { deleteFromCloduinary } from "./deleteFromCloudinary.js";
 
 
 const cleanupCompletedTask = async (taskId, creatorId) => {
@@ -18,9 +19,12 @@ const cleanupCompletedTask = async (taskId, creatorId) => {
 
     if (allCompleted) {
         await Task.findByIdAndDelete(task._id);
+        if (task.document?.publicId) {
+            await deleteFromCloduinary(task.document.publicId)
+        }
         const user = await User.findById(creatorId);
-        user.taskCount = Math.max(0, user.taskCount-1)
-        await user.save({validateBeforeSave:false})
+        user.taskCount = Math.max(0, user.taskCount - 1)
+        await user.save({ validateBeforeSave: false })
     }
 }
 

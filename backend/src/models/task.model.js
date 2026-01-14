@@ -26,8 +26,9 @@ const taskSchema = new mongoose.Schema({
     link: {
         type: String
     },
-    image: {
-        type: String
+    document: {
+        url: String,
+        publicId: String
     },
     revisions: {
         type: [revisionSchema],
