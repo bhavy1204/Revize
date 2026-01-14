@@ -7,10 +7,13 @@ class ApiCLient {
 
     async request(endpoint, options = {}) {
         const url = `${this.baseURL}${endpoint}`
+
+        const isFormData = options.body instanceof FormData;
+
         const config = {
             ...options,
             headers: {
-                'Content-Type': 'application/json',
+                ...(isFormData? {} : {"Content-Type":"application/json"}),
                 ...options.headers,
             },
             credentials: "include",
@@ -89,10 +92,19 @@ class ApiCLient {
 
     // task methods 
 
-    async createTask(heading, link, startDate) {
-        return this.request("/task/create-task", {
-            method: 'POST',
-            body: JSON.stringify({ heading, link, startDate })
+    async createTask(heading, link,description, startDate, document) {
+        const formData = new FormData();
+
+        formData.append("heading", heading);
+        formData.append("link", link);
+        formData.append("startDate", startDate);
+
+        if (description) formData.append("description", description);
+        if(document) formData.append("document",document)
+
+        return this.request("/task/create-task",{
+            method:'POST',
+            body:formData
         })
     }
 

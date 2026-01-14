@@ -3,7 +3,8 @@ import Navbar from '../components/Navbar';
 import ApiCLient from '../utils/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import AddTaskForm from '../components/AddTaskForm.jsx'; // Import AddTaskForm
-import Button from '../components/Button.jsx'; // Import Button for consistency
+import Button from  '../components/Button.jsx'; // Import Button for consistency
+import {formatDistance} from "date-fns" ;
 
 const apiClient = new ApiCLient();
 
@@ -122,10 +123,7 @@ const Dashboard = () => {
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
         <div className="flex justify-end mb-4">
-          <Button
-            variant="primary"
-            onClick={() => setShowAddTaskModal(true)}
-          >
+          <Button variant="primary" onClick={() => setShowAddTaskModal(true)}>
             Add New Task
           </Button>
         </div>
@@ -148,14 +146,33 @@ const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {todayRevisions.map((task) => (
-                <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
+                <div
+                  key={task._id}
+                  className="bg-gray-800 p-4 rounded-lg shadow text-gray-100"
+                >
                   <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
-                  <p className="text-gray-300 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Link</a></p>
                   {task.revisions && task.revisions.length > 0 && (
                     <p className="text-gray-400 text-sm mb-4">
-                      Start Date: {new Date(task.revisions[0].scheduledAt).toLocaleDateString()}
+                      last studied{" "}
+                      {(() => {
+                        const latestCompleted = task.revisions
+                          .filter((r) => r.completedAt)
+                          .sort(
+                            (a, b) =>
+                              new Date(b.completedAt) - new Date(a.completedAt)
+                          )[0];
+
+                        return latestCompleted
+                          ? formatDistance(
+                              new Date(latestCompleted.completedAt),
+                              new Date(),
+                              { addSuffix: true }
+                            )
+                          : "haven’t studied this yet";
+                      })()}
                     </p>
                   )}
+
                   <div className="flex justify-between">
                     <Button
                       variant="success"
@@ -178,75 +195,107 @@ const Dashboard = () => {
           )}
         </div>
 
+        {showAllPending &&
+          (allPendingRevisions.length === 0 ? (
+            <p>No pending revisions.</p>
+          ) : (
+            <div>
+              <h3 className="text-2xl font-semibold mb-4">
+                Your Pending Revisions
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {allPendingRevisions.map((task) => (
+                  <div
+                    key={task._id}
+                    className="bg-gray-800 p-4 rounded-lg shadow text-gray-100"
+                  >
+                    <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
+                    {task.revisions && task.revisions.length > 0 && (
+                      <p className="text-gray-400 text-sm mb-4">
+                        last studied{" "}
+                        {(() => {
+                          const latestCompleted = task.revisions
+                            .filter((r) => r.completedAt)
+                            .sort(
+                              (a, b) =>
+                                new Date(b.completedAt) -
+                                new Date(a.completedAt)
+                            )[0];
 
-        {showAllPending && (allPendingRevisions.length === 0 ? (
-          <p>No pending revisions.</p>
-        ) : (
-          <div>
-            <h3 className="text-2xl font-semibold mb-4">Your Pending Revisions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {allPendingRevisions.map((task) => (
-                <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
-                  <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
-                  <p className="text-gray-300 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Link</a></p>
-                  {task.revisions && task.revisions.length > 0 && (
-                    <p className="text-gray-400 text-sm mb-4">
-                      Start Date: {
-                        new Date(task.revisions[0].scheduledAt).toString() !== 'Invalid Date'
-                          ? new Date(task.revisions[0].scheduledAt).toLocaleDateString()
-                          : 'N/A'
-                      }
-                    </p>
-                  )}
-                  <div className="flex justify-between">
-                    <Button
-                      variant="success"
-                      onClick={() => handleCompleteRevision(task._id)}
-                      className="text-sm"
-                    >
-                      Complete
-                    </Button>
-                    <Button
-                      variant="danger"
-                      onClick={() => handleDeleteTask(task._id)}
-                      className="text-sm"
-                    >
-                      Delete
-                    </Button>
+                          return latestCompleted
+                            ? formatDistance(
+                                new Date(latestCompleted.completedAt),
+                                new Date(),
+                                { addSuffix: true }
+                              )
+                            : "haven’t studied this yet";
+                        })()}
+                      </p>
+                    )}
+                    <div className="flex justify-between">
+                      <Button
+                        variant="success"
+                        onClick={() => handleCompleteRevision(task._id)}
+                        className="text-sm"
+                      >
+                        Complete
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDeleteTask(task._id)}
+                        className="text-sm"
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
+        {showUpcoming &&
+          (upcomingRevisions.length === 0 ? (
+            <p>No upcoming revisions.</p>
+          ) : (
+            <div>
+              <h3 className="text-2xl font-semibold mb-4">
+                Your Upcoming Revisions
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {upcomingRevisions.map((task) => (
+                  <div
+                    key={task._id}
+                    className="bg-gray-800 p-4 rounded-lg shadow text-gray-100"
+                  >
+                    <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
+                    {task.revisions && task.revisions.length > 0 && (
+                      <p className="text-gray-400 text-sm mb-4">
+                        last studied{" "}
+                        {(() => {
+                          const latestCompleted = task.revisions
+                            .filter((r) => r.completedAt)
+                            .sort(
+                              (a, b) =>
+                                new Date(b.completedAt) -
+                                new Date(a.completedAt)
+                            )[0];
 
-
-
-        {showUpcoming && (upcomingRevisions.length === 0 ? (
-          <p>No upcoming revisions.</p>
-        ) : (
-          <div>
-            <h3 className="text-2xl font-semibold mb-4">Your Upcoming Revisions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {upcomingRevisions.map((task) => (
-                <div key={task._id} className="bg-gray-800 p-4 rounded-lg shadow text-gray-100">
-                  <h4 className="text-xl font-bold mb-2">{task.heading}</h4>
-                  <p className="text-gray-300 mb-2"><a href={task.link} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Link</a></p>
-                  {task.revisions && task.revisions.length > 0 && (
-                    <p className="text-gray-400 text-sm mb-4">
-                      Start Date: {
-                        new Date(task.revisions[0].scheduledAt).toString() !== 'Invalid Date'
-                          ? new Date(task.revisions[0].scheduledAt).toLocaleDateString()
-                          : 'N/A'
-                      }
-                    </p>
-                  )}
-                </div>
-              ))}
+                          return latestCompleted
+                            ? formatDistance(
+                                new Date(latestCompleted.completedAt),
+                                new Date(),
+                                { addSuffix: true }
+                              )
+                            : "haven’t studied this yet";
+                        })()}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
