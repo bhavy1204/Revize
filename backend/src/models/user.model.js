@@ -25,20 +25,30 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, "Password required"]
     },
-    taskCount:{
-        type:Number,
-        default:0
+    isOAUth: {
+        type: Boolean,
+        default: false
     },
-    plan:{
-        type:String,
-        enum:["free","pro"],
-        default:"free"
+    authProvider: {
+        type: String
     },
-    subscriptionExpiryDate:{
-        type:Date,
-        default:null
+    taskCount: {
+        type: Number,
+        default: 0
+    },
+    plan: {
+        type: String,
+        enum: ["free", "pro"],
+        default: "free"
+    },
+    subscriptionExpiryDate: {
+        type: Date,
+        default: null
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false
     },
     refreshToken: {
         type: String,
@@ -65,9 +75,9 @@ userSchema.methods.generateAccessToken = function () {
         username: this.username,
         fullName: this.fullName
     },
-      process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-        }
+        process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+    }
     )
 }
 

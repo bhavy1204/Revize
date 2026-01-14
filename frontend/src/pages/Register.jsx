@@ -1,31 +1,63 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import ApiCLient from "../utils/api.js";
 
 const Register = () => {
-  const [fullName, setFullName] = useState('');
-  const [username, setUserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [username, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { register } = useAuth();
 
+  useEffect(() => {
+    /* global google */
+    if (!window.google) return;
+
+    google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleSuccess,
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("google-signup-btn"),
+      {
+        theme: "outline",
+        size: "large",
+        width: "100%",
+      }
+    );
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     try {
       await register({ fullName, username, email, password });
-      navigate('/login'); // Navigate to login on successful registration
+      navigate("/login"); // Navigate to login on successful registration
     } catch (err) {
-      setError(err.message || 'Registration failed');
+      setError(err.message || "Registration failed");
     }
   };
+
+  const handleGoogleSuccess = async (response) => {
+    try {
+      await ApiCLient.googleLogin(response);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Google authentication failed");
+    }
+  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">Register</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
+          Register
+        </h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -105,6 +137,9 @@ const Register = () => {
             >
               Already have an account?
             </a>
+          </div>
+          <div className="mb-6">
+            <div id="google-signup-btn"></div>
           </div>
         </form>
       </div>

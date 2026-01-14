@@ -13,7 +13,7 @@ class ApiCLient {
         const config = {
             ...options,
             headers: {
-                ...(isFormData? {} : {"Content-Type":"application/json"}),
+                ...(isFormData ? {} : { "Content-Type": "application/json" }),
                 ...options.headers,
             },
             credentials: "include",
@@ -41,6 +41,13 @@ class ApiCLient {
         return this.request('/user/register', {
             method: 'POST',
             body: JSON.stringify(userData)
+        })
+    }
+
+    async googleLogin(response) {
+        return this.request('/user/auth/google', {
+            method:'POST',
+            body: JSON.stringify({ token: response.credential })
         })
     }
 
@@ -92,7 +99,7 @@ class ApiCLient {
 
     // task methods 
 
-    async createTask(heading, link,description, startDate, document) {
+    async createTask(heading, link, description, startDate, document) {
         const formData = new FormData();
 
         formData.append("heading", heading);
@@ -100,11 +107,11 @@ class ApiCLient {
         formData.append("startDate", startDate);
 
         if (description) formData.append("description", description);
-        if(document) formData.append("document",document)
+        if (document) formData.append("document", document)
 
-        return this.request("/task/create-task",{
-            method:'POST',
-            body:formData
+        return this.request("/task/create-task", {
+            method: 'POST',
+            body: formData
         })
     }
 
@@ -120,23 +127,23 @@ class ApiCLient {
         })
     }
 
-    async getAllUpcomingRevisions(){
-        return this.request("/task/get/all-upcoming-revision",{
-            method:'GET'
+    async getAllUpcomingRevisions() {
+        return this.request("/task/get/all-upcoming-revision", {
+            method: 'GET'
         })
     }
 
     async completeRevision(taskId) {
         return this.request("/task/complete-revision", {
             method: 'PATCH',
-            body: JSON.stringify({taskId})
+            body: JSON.stringify({ taskId })
         })
     }
 
     async deleteTask(taskId) {
         return this.request("/task/delete-task", {
             method: 'DELETE',
-            body: JSON.stringify({taskId})
+            body: JSON.stringify({ taskId })
         })
     }
 

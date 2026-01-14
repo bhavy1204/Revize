@@ -6,7 +6,8 @@ import mongoose from "mongoose"
 import { Task } from "../models/task.model.js"
 import { generateAccessAndRefreshToken } from "../utils/auth.js"
 import { asyncHandler } from "../utils/AsyncHandler.js"
-
+import { OAuth2Client } from "google-auth-library"
+import { generateFromEmail } from "unique-username-generator"
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, fullName, password } = req.body;
 
@@ -41,6 +42,70 @@ const registerUser = asyncHandler(async (req, res) => {
 
 })
 
+const googleLogin = asyncHandler(async (req, res) => {
+    const { token } = req.body;
+
+    if (!token) {
+        throw new APIError(400, "Google token is required");
+    }
+
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name } = payload;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+        const username = generateFromEmail(email, { randomDigits: 2, stripLeadingDigits: true });
+
+        user = await User.create({
+            fullName: name,
+            email,
+            username,
+            isOAuth: true,
+            authProvider: "google",
+            isEmailVerified:true,
+        });
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+    const accessOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 15 * 60 * 1000,
+    };
+
+    const refreshOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, accessOptions)
+        .cookie("refreshToken", refreshToken, refreshOptions)
+        .json(
+            new APIResponse(
+                200,
+                { user: loggedInUser },
+                "User logged in via Google"
+            )
+        );
+});
+
+
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -52,6 +117,10 @@ const loginUser = asyncHandler(async (req, res) => {
 
     if (!user) {
         throw new APIError(404, "No such user exists")
+    }
+
+    if (user.isOAuth) {
+        throw new APIError(400,"This account uses Google login. Use Continue with Google.");
     }
 
     const isValidPassword = await user.isPasswordCorrect(password);
@@ -237,13 +306,14 @@ const deleteAccount = asyncHandler(async (req, res) => {
     }
 
     return res.status(200)
-        .json( 
+        .json(
             new APIResponse(200, null, "User Deleted succesfully")
         )
 })
 
 export {
     registerUser,
+    googleLogin,
     loginUser,
     authMe,
     logout,
