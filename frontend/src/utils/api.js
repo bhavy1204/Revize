@@ -1,3 +1,5 @@
+import { useAuth0Token } from "./useAuth0Toke.js";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1"
 
 class ApiCLient {
@@ -46,10 +48,20 @@ class ApiCLient {
 
     async googleLogin(response) {
         return this.request('/user/auth/google', {
-            method:'POST',
+            method: 'POST',
             body: JSON.stringify({ token: response.credential })
         })
     }
+
+    async gitHubLogin(auth0Token) {
+        return this.request("/user/auth/github", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${auth0Token}`,
+            },
+        });
+    }
+
 
     async login(email, password) {
         return this.request('/user/login', {

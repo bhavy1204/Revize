@@ -70,7 +70,7 @@ const googleLogin = asyncHandler(async (req, res) => {
             username,
             isOAuth: true,
             authProvider: "google",
-            isEmailVerified:true,
+            isEmailVerified: true,
         });
     }
 
@@ -105,6 +105,56 @@ const googleLogin = asyncHandler(async (req, res) => {
         );
 });
 
+const githubAuth = asyncHandler(async (req, res) => {
+    const { sub, email, name } = req.auth0User;
+
+    let user = await User.findOne({ authId: sub });
+
+    if (!user) {
+        const username = generateFromEmail(email, { randomDigits: 2, stripLeadingDigits: true });
+        user = await User.create({
+            username,
+            fullName: name,
+            email,
+            authId: sub,
+            authProvider: "github",
+            isOAuth: true,
+            isEmailVerified: true,
+        });
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    const accessOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 15 * 60 * 1000,
+    };
+
+    const refreshOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    res
+        .status(200)
+        .cookie("accessToken", accessToken, accessOptions)
+        .cookie("refreshToken", refreshToken, refreshOptions)
+        .json(
+            new APIResponse(
+                200,
+                { user: loggedInUser },
+                "User logged in via GitHub"
+            )
+        );
+});
+
+
 
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -119,8 +169,8 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new APIError(404, "No such user exists")
     }
 
-    if (user.isOAuth) {
-        throw new APIError(400,"This account uses Google login. Use Continue with Google.");
+    if (user.isOAUth) {
+        throw new APIError(400, "This account uses Google login. Use Continue with Google.");
     }
 
     const isValidPassword = await user.isPasswordCorrect(password);
@@ -314,6 +364,7 @@ const deleteAccount = asyncHandler(async (req, res) => {
 export {
     registerUser,
     googleLogin,
+    githubAuth,
     loginUser,
     authMe,
     logout,

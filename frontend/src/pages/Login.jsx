@@ -1,33 +1,52 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useAuth0Token } from "../utils/useAuth0Toke.js";
+import ApiCLient from "../utils/api.js";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const apiClient = new ApiCLient()
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     try {
-      await login(email, password);
-      navigate('/'); // Navigate to dashboard on successful login
+      await apiClient.login(email, password);
+      navigate("/"); // Navigate to dashboard on successful login
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.message || "Login failed");
     }
   };
+
+  const getAuth0Token = useAuth0Token();
+  const handleGithubLogin = async ()=>{
+
+      const token = await getAuth0Token();
+      if (!token) return;
+
+      await apiClient.gitHubLogin(token);
+      navigate("/");
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
+          Login
+        </h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-200 text-sm font-bold mb-2">
+            <label
+              htmlFor="email"
+              className="block text-gray-200 text-sm font-bold mb-2"
+            >
               Email
             </label>
             <input
@@ -40,7 +59,10 @@ const Login = () => {
             />
           </div>
           <div className="mb-6">
-            <label htmlFor="password" className="block text-gray-200 text-sm font-bold mb-2">
+            <label
+              htmlFor="password"
+              className="block text-gray-200 text-sm font-bold mb-2"
+            >
               Password
             </label>
             <input
@@ -59,10 +81,14 @@ const Login = () => {
             >
               Sign In
             </button>
-            <a href="/register" className="inline-block align-baseline font-bold text-sm text-blue-400 hover:text-blue-300">
+            <a
+              href="/register"
+              className="inline-block align-baseline font-bold text-sm text-blue-400 hover:text-blue-300"
+            >
               Don't have an account?
             </a>
           </div>
+          <button onClick={handleGithubLogin}>Continue with GitHub</button>
         </form>
       </div>
     </div>

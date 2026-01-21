@@ -99,12 +99,11 @@ const Settings = () => {
   const handleDeleteAccount = async () => {
     if (
       window.confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
+        "Are you sure you want to delete your account? This action cannot be undone.",
       )
     ) {
       try {
         await apiClient.deleteAccount();
-        await logout();
         alert("Account deleted successfully.");
         navigate("/register");
       } catch (err) {

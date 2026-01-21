@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import ApiCLient from "../utils/api.js";
+import { useAuth0Token } from "../utils/useAuth0Toke.js";
+
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
@@ -11,6 +13,8 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { register } = useAuth();
+
+  const apiClient = new ApiCLient();
 
   useEffect(() => {
     /* global google */
@@ -27,7 +31,7 @@ const Register = () => {
         theme: "outline",
         size: "large",
         width: "100%",
-      }
+      },
     );
   }, []);
 
@@ -35,7 +39,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
     try {
-      await register({ fullName, username, email, password });
+      await ApiCLient.register({ fullName, username, email, password });
       navigate("/login"); // Navigate to login on successful registration
     } catch (err) {
       setError(err.message || "Registration failed");
@@ -51,6 +55,15 @@ const Register = () => {
     }
   };
 
+  const getAuth0Token = useAuth0Token();
+
+  const handleGithubLogin = async () => {
+    const token = await getAuth0Token();
+    if (!token) return;
+
+    await apiClient.gitHubLogin(token);
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -141,6 +154,7 @@ const Register = () => {
           <div className="mb-6">
             <div id="google-signup-btn"></div>
           </div>
+          <button onClick={handleGithubLogin} className="border rounded-2xl">Login with GitHub</button>
         </form>
       </div>
     </div>
