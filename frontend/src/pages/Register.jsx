@@ -39,7 +39,7 @@ const Register = () => {
     e.preventDefault();
     setError("");
     try {
-      await ApiCLient.register({ fullName, username, email, password });
+      await apiClient.register({ fullName, username, email, password });
       navigate("/login"); // Navigate to login on successful registration
     } catch (err) {
       setError(err.message || "Registration failed");
