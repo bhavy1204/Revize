@@ -46,6 +46,20 @@ class ApiCLient {
         })
     }
 
+    async sendOtp(email) {
+        return this.request('/user/otp', {
+            method: 'POST',
+            body: JSON.stringify({ email })
+        })
+    }
+
+    async verifyOtp(data) {
+        return this.request('/user/verify-otp', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+    }
+
     async googleLogin(response) {
         return this.request('/user/auth/google', {
             method: 'POST',

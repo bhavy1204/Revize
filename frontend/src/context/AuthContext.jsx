@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const userData = await apiClient.login(email, password);
-      setUser(userData.user); // Assuming response has a .user property
+      setUser(userData.data.user); // Assuming response has a .user property
       setIsLoggedIn(true);
       setLoading(false);
       return userData;

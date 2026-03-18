@@ -11,13 +11,14 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const apiClient = new ApiCLient()
+  const apiClient = new ApiCLient();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      await apiClient.login(email, password);
+      login(email, password);
+      
       navigate("/"); // Navigate to dashboard on successful login
     } catch (err) {
       setError(err.message || "Login failed");
@@ -25,14 +26,13 @@ const Login = () => {
   };
 
   const getAuth0Token = useAuth0Token();
-  const handleGithubLogin = async ()=>{
+  const handleGithubLogin = async () => {
+    const token = await getAuth0Token();
+    if (!token) return;
 
-      const token = await getAuth0Token();
-      if (!token) return;
-
-      await apiClient.gitHubLogin(token);
-      navigate("/");
-  }
+    await apiClient.gitHubLogin(token);
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">

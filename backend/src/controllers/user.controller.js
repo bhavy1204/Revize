@@ -11,6 +11,7 @@ import { generateFromEmail } from "unique-username-generator"
 import { generateOTP } from "../utils/otp.js"
 import { Otp } from "../models/otp.model.js"
 import { transporter } from "../config/mail.config.js"
+import { VerifiedEmail } from "../models/verifiedEmail.model.js"
 
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, fullName, password } = req.body;

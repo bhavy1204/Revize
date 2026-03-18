@@ -4,13 +4,14 @@ import { useAuth } from "../context/AuthContext.jsx";
 import ApiCLient from "../utils/api.js";
 import { useAuth0Token } from "../utils/useAuth0Toke.js";
 
-
 const Register = () => {
+  const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState("");
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [otp, setOtp] = useState("");
   const navigate = useNavigate();
   const { register } = useAuth();
 
@@ -37,12 +38,39 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (step !== 3) return;
+
     setError("");
     try {
       await apiClient.register({ fullName, username, email, password });
       navigate("/login"); // Navigate to login on successful registration
     } catch (err) {
       setError(err.message || "Registration failed");
+    }
+  };
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await apiClient.sendOtp(email);
+      setStep(2);
+    } catch (err) {
+      setError(err.message || "Failed to send OTP");
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      await apiClient.verifyOtp({ email, otp });
+      setStep(3);
+    } catch (err) {
+      setError(err.message || "Invalid OTP");
     }
   };
 
@@ -73,88 +101,112 @@ const Register = () => {
         </h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="fullName"
-              className="block text-gray-200 text-sm font-bold mb-2"
-            >
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="fullName"
-              className="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-gray-200 text-sm font-bold mb-2"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
-              value={username}
-              onChange={(e) => setUserName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-200 text-sm font-bold mb-2"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-gray-200 text-sm font-bold mb-2"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Register
-            </button>
-            <a
-              href="/login"
-              className="inline-block align-baseline font-bold text-sm text-blue-400 hover:text-blue-300"
-            >
-              Already have an account?
-            </a>
-          </div>
-          <div className="mb-6">
-            <div id="google-signup-btn"></div>
-          </div>
-          <button onClick={handleGithubLogin} className="border rounded-2xl">Login with GitHub</button>
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+          {/* STEP 1: EMAIL */}
+          {step === 1 && (
+            <>
+              <div className="mb-4">
+                <label className="block text-gray-200 text-sm font-bold mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button
+                onClick={handleSendOtp}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+              >
+                Send OTP
+              </button>
+            </>
+          )}
+
+          {/* STEP 2: OTP */}
+          {step === 2 && (
+            <>
+              <p className="text-gray-300 mb-4 text-sm">
+                OTP sent to <span className="font-semibold">{email}</span>
+              </p>
+
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Enter OTP"
+                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button
+                onClick={handleVerifyOtp}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded w-full"
+              >
+                Verify OTP
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="text-sm text-blue-400 mt-3"
+              >
+                Change Email
+              </button>
+            </>
+          )}
+
+          {/* STEP 3: REGISTER */}
+          {step === 3 && (
+            <>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Username"
+                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  value={username}
+                  onChange={(e) => setUserName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="mb-6">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+              >
+                Register
+              </button>
+            </>
+          )}
         </form>
       </div>
     </div>
