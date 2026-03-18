@@ -8,6 +8,10 @@ import { generateAccessAndRefreshToken } from "../utils/auth.js"
 import { asyncHandler } from "../utils/AsyncHandler.js"
 import { OAuth2Client } from "google-auth-library"
 import { generateFromEmail } from "unique-username-generator"
+import { generateOTP } from "../utils/otp.js"
+import { Otp } from "../models/otp.model.js"
+import { transporter } from "../config/mail.config.js"
+
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, fullName, password } = req.body;
 
@@ -23,6 +27,12 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new APIError(409, "User already exists");
     }
 
+    const verified = await VerifiedEmail.findOne({ email });
+
+    if (!verified) {
+        throw new APIError(403, "Email not verified");
+    }
+
     const user = await User.create({
         fullName,
         username: username.toLowerCase().trim(),
@@ -36,8 +46,86 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new APIError(500, "SOmething went wrong while registring User");
     }
 
+    await VerifiedEmail.deleteOne({ email });
+
     return res.status(201).json(
         new APIResponse(201, createdUser, "User registerd Successfully")
+    )
+
+})
+
+const sendOtp = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    if (!email || !email.includes("@")) {
+        throw new APIError(400, "Invalid email");
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+        throw new APIError(409, "User already verified");
+    }
+
+    const otp = generateOTP();
+
+    await Otp.deleteMany({ email });
+
+    await Otp.create({
+        email,
+        otp,
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000)
+    })
+
+    await transporter.sendMail({
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Your OTP Code",
+        html: `<h2>${otp}</h2><p>Expires in 5 mins</p>`,
+    })
+
+    return res.status(200).json(
+        new APIResponse(200,null, "Email send success")
+    )
+
+})
+
+
+const verifyOtp = asyncHandler(async (req, res) => {
+    const { email, otp } = req.body;
+
+    if (!email || !email.includes("@")) {
+        throw new APIError(400, "Invalid email");
+    }
+
+    if(!otp){
+        throw new APIError(400, "Otp required")
+    }
+
+    const record = await Otp.findOne({email, otp})
+
+    if(!record){
+        throw new APIError(404, "Invalid OTP ")
+    }
+
+    if(record.expiresAt< new Date()){
+        throw new APIError(403, "OTP expired")
+    }
+
+    await VerifiedEmail.findOneAndUpdate(
+        { email },
+        {
+            email,
+            verifiedAt: new Date(),
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+        },
+        { upsert: true }
+    );
+
+    await Otp.deleteOne({_id:record._id});
+
+    return res.status(200).json(
+        new APIResponse(200, null, "OTP verified")
     )
 
 })
@@ -153,8 +241,6 @@ const githubAuth = asyncHandler(async (req, res) => {
             )
         );
 });
-
-
 
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
@@ -363,6 +449,8 @@ const deleteAccount = asyncHandler(async (req, res) => {
 
 export {
     registerUser,
+    sendOtp,
+    verifyOtp,
     googleLogin,
     githubAuth,
     loginUser,

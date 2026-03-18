@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, authMe, logout, refreshToken, changePassword, getCurrentUser, deleteAccount, googleLogin, githubAuth } from "../controllers/user.controller.js"
+import { registerUser, loginUser, authMe, logout, refreshToken, changePassword, getCurrentUser, deleteAccount, googleLogin, githubAuth, sendOtp, verifyOtp } from "../controllers/user.controller.js"
 import { verifyJwt } from "../middleware/auth.middleware.js";
 import { verifyAuth0 } from "../middleware/auth0.middleware.js";
 import { authLimiter, apiLimiter } from "../middleware/rateLimiting.middleware.js";
@@ -11,6 +11,10 @@ router.route("/auth/google").post(authLimiter, googleLogin)
 router.route("/auth/github").post(authLimiter,verifyAuth0, githubAuth)
 // router.get("/callback/github", )
 router.route("/login").post(authLimiter, loginUser)
+
+router.route("/otp").post(authLimiter, sendOtp)
+router.route("/verify-otp").post(authLimiter, verifyOtp)
+
 router.use(verifyJwt);
 router.route("/authMe").get(authMe)
 router.route("/logout").post(logout)
