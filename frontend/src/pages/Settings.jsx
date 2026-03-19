@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ApiCLient from "../utils/api.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import EnableNotifications from "../components/EnableNotification.jsx";
 
 const apiClient = new ApiCLient();
 
@@ -240,6 +241,11 @@ const Settings = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="notification-card bg-gray-800 rounded-lg shadow-md text-gray-100">
+            <p>Get daily reminders to stay consistent</p>
+            <EnableNotifications />
           </div>
 
           {/* Account Actions */}

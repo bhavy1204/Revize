@@ -123,6 +123,14 @@ class ApiCLient {
         })
     }
 
+    // push notifications
+
+    // async subscribe(){
+    //     return this.request("/notification//subscribe",{
+    //         method:'POST'
+    //     })
+    // }
+
     // task methods 
 
     async createTask(heading, link, startDate, description, document) {

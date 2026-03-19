@@ -25,12 +25,14 @@ import healthCheckRouter from "./src/routes/HealthCheck.route.js";
 import taskRouter from "./src/routes/task.route.js"
 import userRouter from "./src/routes/user.route.js"
 import utilityRouter from "./src/routes/utility.route.js"
+import notificationRouter from "./src/routes/notification.route.js"
 
 // Routes Declaration
 app.use("/api/v1/healthCheck", healthCheckRouter);
 app.use("/api/v1/task", taskRouter)
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/utility", utilityRouter)
+app.use("/api/v1/notification", notificationRouter)
 
 app.use(express.static("public")); // Serve static files after API routes
 
