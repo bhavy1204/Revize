@@ -77,6 +77,68 @@ const createTask = asyncHandler(async (req, res) => {
     )
 })
 
+const leetcodeCreateTask = asyncHandler(async (req,res)=>{
+
+    const {title,url, problemId} = req.body;
+    const creator= req.user?._id;
+
+    if(!creator){
+        console.log(req.user);
+        throw new APIError(400, "Creator ID required")
+    }
+
+    if(!title || !url || !problemId){
+        throw new APIError(400, "title, url and problemId required")
+    }
+
+    const user = await User.findById(creator);
+
+    if(!user){
+        throw new APIError(400, "No such creator found")
+    }
+
+    if (user.taskCount >= 500) {
+        throw new APIError(403, user.taskCount, "Free plan limit reached")
+    }
+
+    const revisionGaps = [1, 3, 7, 14, 30, 60];
+
+    const baseDate = new Date();
+    // console.log("Base Date from Frontend:", startDate, "Parsed as:", baseDate);
+
+    const revisions = revisionGaps.map((gap) => {
+        // reset base
+        const scheduledAt = new Date(baseDate);
+
+        // calc schedule date
+        scheduledAt.setDate(scheduledAt.getDate() + gap);
+
+        // update revision obj
+        // console.log(`Revision for gap ${gap}:`, scheduledAt);
+        return {
+            scheduledAt,
+            completedAt: null
+        }
+
+    })
+
+    const result = await Task.create({
+        creator,
+        heading:title,
+        link:url,
+        document: null,
+        description:null,
+        revisions
+    })
+
+    user.taskCount = user.taskCount + 1;
+    await user.save({ validateBeforeSave: false });    
+
+    res.status(200).json(
+        new APIResponse(200, result, "All done")
+    )
+})
+
 const getTodaysRevision = asyncHandler(async (req, res) => {
 
     const creator = req.user?._id
@@ -277,6 +339,7 @@ const deleteTask = asyncHandler(async (req, res) => {
 
 export {
     createTask,
+    leetcodeCreateTask,
     getTodaysRevision,
     getAllPendingRevision,
     getAllUpcomingRevision,
