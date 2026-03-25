@@ -132,6 +132,22 @@ const Settings = () => {
     }
   };
 
+  const handleLogout = async () => {
+    setMessage("");
+    setError("");
+    try {
+      if (
+        !window.confirm("Are you sure you want to logout from Revize?")
+      ) {
+        return;
+      }
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      setError(err.message || "Logout failed");
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -275,6 +291,17 @@ const Settings = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Logout (at the very end, as requested) */}
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </div>
