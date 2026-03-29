@@ -149,6 +149,12 @@ class ApiCLient {
         })
     }
 
+    async getTask(taskId) {
+        return this.request(`/task/get-task/${taskId}`, {
+            method: 'GET',
+        })
+    }
+
     async getTodayRevision() {
         return this.request("/task/get/today-revision", {
             method: 'GET'

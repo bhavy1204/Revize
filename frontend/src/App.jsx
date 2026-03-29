@@ -3,6 +3,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Settings from "./pages/Settings.jsx";
+import TaskDetails from "./pages/TaskDetails.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import { Auth0Provider } from "@auth0/auth0-react";
 
@@ -44,6 +45,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tasks/:taskId"
+            element={
+              <ProtectedRoute>
+                <TaskDetails />
               </ProtectedRoute>
             }
           />

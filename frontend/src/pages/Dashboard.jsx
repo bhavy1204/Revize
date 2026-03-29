@@ -47,7 +47,17 @@ const Dashboard = () => {
   const todayRef = useRef(null);
   const pendingRef = useRef(null);
   const upcomingRef = useRef(null);
-  const [activeNav, setActiveNav] = useState('today');
+  const [activeNav, setActiveNav] = useState(() => {
+    try {
+      const pending = localStorage.getItem('showAllPending') === 'true';
+      const upcoming = localStorage.getItem('showAllUpcoming') === 'true';
+      if (pending) return 'pending';
+      if (upcoming) return 'upcoming';
+    } catch {
+      // ignore
+    }
+    return 'today';
+  });
   const [todayScrollRequested, setTodayScrollRequested] = useState(false);
   const [pendingScrollRequested, setPendingScrollRequested] = useState(false);
   const [upcomingScrollRequested, setUpcomingScrollRequested] = useState(false);
@@ -125,13 +135,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleDeleteTask = async (taskId) => {
-    try {
-      await apiClient.deleteTask(taskId);
-      fetchTasks(); // Refresh tasks after deletion
-    } catch (err) {
-      setError(err.message || 'Failed to delete task');
-    }
+  const handleViewDetails = (taskId) => {
+    navigate(`/tasks/${taskId}`);
   };
 
   const scrollToToday = () => {
@@ -193,6 +198,13 @@ const Dashboard = () => {
       setUpcomingScrollRequested(false);
     }
   }, [upcomingScrollRequested, showUpcoming]);
+
+  // Keep the visible section in sync with the sidebar preferences
+  useEffect(() => {
+    if (showAllPending) setActiveNav('pending');
+    else if (showUpcoming) setActiveNav('upcoming');
+    else setActiveNav('today');
+  }, [showAllPending, showUpcoming]);
 
   if (authLoading) {
     return <p className="text-center mt-8">Loading application...</p>;
@@ -403,20 +415,20 @@ const Dashboard = () => {
                           </p>
                         )}
 
-                        <div className="flex justify-between">
+                        <div className="flex justify-between gap-3">
                           <Button
                             variant="success"
                             onClick={() => handleCompleteRevision(task._id)}
-                            className="text-sm"
+                            className="text-sm flex-1"
                           >
                             Complete
                           </Button>
                           <Button
-                            variant="danger"
-                            onClick={() => handleDeleteTask(task._id)}
-                            className="text-sm"
+                            variant="secondary"
+                            onClick={() => handleViewDetails(task._id)}
+                            className="text-sm flex-1"
                           >
-                            Delete
+                      view details
                           </Button>
                         </div>
                       </div>
@@ -466,22 +478,22 @@ const Dashboard = () => {
                               })()}
                             </p>
                           )}
-                          <div className="flex justify-between">
+                          <div className="flex justify-between gap-3">
                             <Button
                               variant="success"
                               onClick={() =>
                                 handleCompleteRevision(task._id)
                               }
-                              className="text-sm"
+                              className="text-sm flex-1"
                             >
                               Complete
                             </Button>
                             <Button
-                              variant="danger"
-                              onClick={() => handleDeleteTask(task._id)}
-                              className="text-sm"
+                              variant="secondary"
+                              onClick={() => handleViewDetails(task._id)}
+                              className="text-sm flex-1"
                             >
-                              Delete
+                              view details
                             </Button>
                           </div>
                         </div>
@@ -532,6 +544,18 @@ const Dashboard = () => {
                               })()}
                             </p>
                           )}
+
+                          <div className="mt-3">
+                            <Button
+                              variant="secondary"
+                              onClick={() =>
+                                handleViewDetails(task._id)
+                              }
+                              className="text-sm w-full"
+                            >
+                              view details
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>

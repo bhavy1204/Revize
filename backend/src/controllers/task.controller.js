@@ -139,6 +139,19 @@ const leetcodeCreateTask = asyncHandler(async (req,res)=>{
     )
 })
 
+const getTask = asyncHandler(async (req, res) => {
+    const taskId = req.params.taskId;
+    if(!taskId){
+        throw new APIError(400, "taskId required")
+    }
+
+    const task = await Task.findById(taskId);
+
+    return res.status(200).json(
+        new APIResponse(200, task, "Task fetched successfully")
+    )
+})
+
 const getTodaysRevision = asyncHandler(async (req, res) => {
 
     const creator = req.user?._id
@@ -345,7 +358,7 @@ export {
     getAllUpcomingRevision,
     completeRevision,
     deleteTask,
-
+    getTask,
 }
 
 
