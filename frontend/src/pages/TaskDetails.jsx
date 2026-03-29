@@ -269,30 +269,12 @@ const TaskDetails = () => {
                 <div className="space-y-5">
                   <section className="bg-gray-800 rounded-lg shadow p-5">
                     <h2 className="text-xl font-semibold text-gray-100 mb-4">
-                      Task details
+                      Details
                     </h2>
 
                     <div className="space-y-2 text-gray-300">
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Task ID</span>
-                        <span className="text-right">
-                          {formatMaybe(task._id)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Creator</span>
-                        <span className="text-right">
-                          {formatMaybe(task.creator)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Heading</span>
-                        <span className="text-right">
-                          {formatMaybe(task.heading)}
-                        </span>
-                      </div>
+                      
+                      
 
                       <div className="flex justify-between gap-4">
                         <span className="text-gray-400">Link</span>
@@ -315,19 +297,7 @@ const TaskDetails = () => {
                         </span>
                       </div>
 
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Updated at</span>
-                        <span className="text-right">
-                          {formatDateMaybe(task.updatedAt)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">__v</span>
-                        <span className="text-right">
-                          {formatMaybe(task.__v)}
-                        </span>
-                      </div>
+                       
 
                       <div>
                         <div className="text-gray-400 mb-1">
