@@ -22,7 +22,12 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-    if ( file.mimetype.startsWith("image/") || file.mimetype === "application/pdf" ) {
+    if ( file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf" ||
+    file.mimetype === "application/msword" ||
+    file.mimetype === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    file.mimetype === "text/plain" ||
+    file.mimetype === "text/markdown") {
         cb(null, true);
     } else {
         cb(

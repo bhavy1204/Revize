@@ -62,11 +62,10 @@ const Settings = () => {
     return (
       <button
         onClick={toggle}
-        className={`py-2 px-4 rounded font-medium ${
-          val
-            ? "bg-green-500 hover:bg-green-600"
-            : "bg-gray-600 hover:bg-gray-500"
-        } text-white`}
+        className={`py-2 px-4 rounded font-medium ${val
+          ? "bg-green-500 hover:bg-green-600"
+          : "bg-gray-600 hover:bg-gray-500"
+          } text-white`}
       >
         {val ? "Enabled" : "Disabled"}
       </button>
@@ -241,11 +240,10 @@ const Settings = () => {
                   <div>Show All Pending Revisions:</div>
                   <button
                     onClick={toggleShowAllPending}
-                    className={`py-2 px-4 rounded font-medium ${
-                      showAllPendingLocal
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-gray-600 hover:bg-gray-500"
-                    } text-white`}
+                    className={`py-2 px-4 rounded font-medium ${showAllPendingLocal
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-gray-600 hover:bg-gray-500"
+                      } text-white`}
                   >
                     {showAllPendingLocal ? "Enabled" : "Disabled"}
                   </button>
@@ -259,9 +257,22 @@ const Settings = () => {
             )}
           </div>
 
-          <div className="notification-card bg-gray-800 rounded-lg shadow-md text-gray-100">
-            <p>Get daily reminders to stay consistent</p>
-            <EnableNotifications />
+          <div className="bg-gray-800 rounded-lg shadow-md text-gray-100">
+            <button
+              onClick={() => toggleCard("notifications")}
+              className="w-full text-left p-6 text-2xl font-semibold"
+            >
+              Notifications
+            </button>
+
+            {openCard === "notifications" && (
+              <div className="px-6 pb-6 space-y-4">
+                <p className="text-gray-300">
+                  Get daily reminders to stay consistent
+                </p>
+                <EnableNotifications />
+              </div>
+            )}
           </div>
 
           {/* Account Actions */}

@@ -365,8 +365,17 @@ const Dashboard = () => {
             </div>
 
             {showAddTaskModal && (
-              <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50">
-                <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md text-gray-100">
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/70 backdrop-blur-sm"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-task-title"
+                onClick={() => setShowAddTaskModal(false)}
+              >
+                <div
+                  className="bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto text-gray-100 border border-gray-700"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <AddTaskForm
                     onClose={() => setShowAddTaskModal(false)}
                     onTaskAdded={fetchTasks}
