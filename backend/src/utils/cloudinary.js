@@ -8,7 +8,8 @@ const uploadToCloudinary = async (localFilePath)=>{
             return null;
         }
         const response = await c.uploader.upload(localFilePath,{
-            resource_type:"auto"
+            resource_type: "raw",
+            type: "upload"
         })
 
         try {

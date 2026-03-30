@@ -133,11 +133,10 @@ const TaskDetails = () => {
               <button
                 type="button"
                 onClick={handleSidebarToday}
-                className={`text-left px-3 py-2 rounded transition-colors ${
-                  activeNav === 'today'
+                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'today'
                     ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
                     : 'hover:bg-gray-700 text-gray-200'
-                }`}
+                  }`}
               >
                 todays task
               </button>
@@ -145,11 +144,10 @@ const TaskDetails = () => {
               <button
                 type="button"
                 onClick={handleSidebarPending}
-                className={`text-left px-3 py-2 rounded transition-colors ${
-                  activeNav === 'pending'
+                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'pending'
                     ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
                     : 'hover:bg-gray-700 text-gray-200'
-                }`}
+                  }`}
               >
                 pending
               </button>
@@ -157,11 +155,10 @@ const TaskDetails = () => {
               <button
                 type="button"
                 onClick={handleSidebarUpcoming}
-                className={`text-left px-3 py-2 rounded transition-colors ${
-                  activeNav === 'upcoming'
+                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'upcoming'
                     ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
                     : 'hover:bg-gray-700 text-gray-200'
-                }`}
+                  }`}
               >
                 upcoming tasks
               </button>
@@ -169,11 +166,10 @@ const TaskDetails = () => {
               <button
                 type="button"
                 onClick={handleSidebarSettings}
-                className={`text-left px-3 py-2 rounded transition-colors ${
-                  activeNav === 'settings'
+                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'settings'
                     ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
                     : 'hover:bg-gray-700 text-gray-200'
-                }`}
+                  }`}
               >
                 settings
               </button>
@@ -273,20 +269,19 @@ const TaskDetails = () => {
                     </h2>
 
                     <div className="space-y-2 text-gray-300">
-                      
-                      
 
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Link</span>
-                        <span className="text-right">
-                          {formatMaybe(task.link)}
-                        </span>
-                      </div>
 
                       <div className="flex justify-between gap-4">
                         <span className="text-gray-400">Description</span>
                         <span className="text-right">
                           {formatMaybe(task.description)}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between gap-4">
+                        <span className="text-gray-400">Link</span>
+                        <span className="text-right">
+                          {formatMaybe(task.link)}
                         </span>
                       </div>
 
@@ -297,26 +292,32 @@ const TaskDetails = () => {
                         </span>
                       </div>
 
-                       
+
 
                       <div>
                         <div className="text-gray-400 mb-1">
                           Document
                         </div>
+
                         {task.document ? (
                           <div className="text-sm text-gray-300 space-y-1">
+
+                            <iframe
+                              src={task.document.url}
+                              width="100%"
+                              height="400"
+                              title="Document"
+                            ></iframe>
+
                             <div>
                               <span className="text-gray-400">
                                 URL:
-                              </span>{' '}
-                              {formatMaybe(task.document.url)}
+                              </span>{" "}
+                              <a href={task.document.url} target="_blank" rel="noopener noreferrer">
+                                {formatMaybe(task.document.url)}
+                              </a>
                             </div>
-                            <div>
-                              <span className="text-gray-400">
-                                Public ID:
-                              </span>{' '}
-                              {formatMaybe(task.document.publicId)}
-                            </div>
+
                           </div>
                         ) : (
                           <div className="text-gray-300">
