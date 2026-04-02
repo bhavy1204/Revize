@@ -11,11 +11,10 @@ script.onload = function () {
 
 // listen from injected script
 window.addEventListener("message", (event) => {
-    console.log("Content js active")
+
     if (event.source !== window) return;
 
     if (event.data.type === "PROBLEM_SOLVED") {
-        console.log("📦 Received from page:", event.data.payload);
 
         chrome.runtime.sendMessage({
             type: "PROBLEM_SOLVED",

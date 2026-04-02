@@ -46,7 +46,7 @@ function checkAccepted(data) {
         data?.state === "SUCCESS" &&
         data?.finished === true
     ) {
-        console.log("✅ ACCEPTED DETECTED (REAL)");
+        // console.log("✅ ACCEPTED DETECTED (REAL)");
 
         const problem = {
             title: document.querySelector("h1")?.innerText || "Unknown",
