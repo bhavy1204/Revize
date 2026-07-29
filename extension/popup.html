@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Revize</title>
+  <style>
+    body {
+      width: 260px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 16px;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    h1 {
+      font-size: 15px;
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #1e293b;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+    }
+    .dot.connected {
+      background: #22c55e;
+    }
+    button {
+      width: 100%;
+      padding: 9px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .primary {
+      background: #6366f1;
+      color: white;
+    }
+    .secondary {
+      background: #334155;
+      color: #e2e8f0;
+      margin-top: 8px;
+    }
+    .hint {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Revize</h1>
+  <div class="status">
+    <div class="dot" id="dot"></div>
+    <span id="statusText">Checking...</span>
+  </div>
+  <button class="primary" id="connectBtn">Open Revize to Connect</button>
+  <button class="secondary" id="disconnectBtn" style="display:none;">Disconnect</button>
+  <div class="hint">Solve problems on LeetCode and they'll sync to your Revize account automatically.</div>
+  <script src="popup.js"></script>
+</body>
+</html>

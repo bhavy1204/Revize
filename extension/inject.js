@@ -1,6 +1,5 @@
-console.log("🔥 Injected into page context");
+console.log("revize: injected into page context");
 
-// ---- FETCH ----
 const originalFetch = window.fetch;
 
 window.fetch = async (...args) => {
@@ -12,7 +11,6 @@ window.fetch = async (...args) => {
         if (typeof url === "string" && url.includes("/submissions/detail/")) {
             const clone = response.clone();
             const data = await clone.json();
-
             checkAccepted(data);
         }
     } catch (e) { }
@@ -20,15 +18,13 @@ window.fetch = async (...args) => {
     return response;
 };
 
-// ---- XHR ----
 const originalOpen = XMLHttpRequest.prototype.open;
 
 XMLHttpRequest.prototype.open = function (method, url) {
     this.addEventListener("load", function () {
         try {
-            if (url.includes("/submissions/detail/")) {
+            if (typeof url === "string" && url.includes("/submissions/detail/")) {
                 const data = JSON.parse(this.responseText);
-
                 checkAccepted(data);
             }
         } catch (e) { }
@@ -37,30 +33,40 @@ XMLHttpRequest.prototype.open = function (method, url) {
     return originalOpen.apply(this, arguments);
 };
 
-// ---- CHECK ----
-function checkAccepted(data) {
-    console.log("📡 Page response:", data);
+const seenSubmissionIds = new Set();
 
+function checkAccepted(data) {
     if (
         data?.status_msg === "Accepted" &&
         data?.state === "SUCCESS" &&
         data?.finished === true
     ) {
-        // console.log("✅ ACCEPTED DETECTED (REAL)");
+        const subId = data.submission_id;
+        if (subId && seenSubmissionIds.has(subId)) return;
+        if (subId) seenSubmissionIds.add(subId);
+
+        console.log("Revize: ACCEPTED DETECTED");
+
+        const slug = window.location.pathname.split("/")[2];
 
         const problem = {
-            title: document.querySelector("h1")?.innerText || "Unknown",
-            url: window.location.href,
-            problemId: window.location.pathname.split("/")[2]
+            title: document.querySelector(`a[href="/problems/${slug}/"]`)?.innerText || slug,
+            url: window.location.origin + `/problems/${slug}/`,
+            problemId: slug,
+            questionId: data.question_id,
+            lang: data.lang,
+            runtime: data.status_runtime,
+            memory: data.status_memory,
+            solvedAt: new Date().toISOString()
         };
 
-        // send to content script
         window.postMessage(
             {
+                source: "revize-inject",
                 type: "PROBLEM_SOLVED",
                 payload: problem
             },
-            "*"
+            window.location.origin
         );
     }
 }
