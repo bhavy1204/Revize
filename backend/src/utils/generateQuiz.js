@@ -31,7 +31,7 @@ correctIndex is the 0-based index of the correct option in the options array. Va
 
     const questions = Array.isArray(parsed) ? parsed : parsed.questions;
 
-    if (!questions || questions.length < 30) {
+    if (!questions) {
         throw new Error("AI did not return 30 questions");
     }
 

@@ -50,6 +50,7 @@ const createTask = asyncHandler(async (req, res) => {
         const scheduledAt = new Date(baseDate);
 
         // calc schedule date
+        scheduledAt.setHours(0, 0, 0, 0);
         scheduledAt.setDate(scheduledAt.getDate() + gap);
 
         // update revision obj
@@ -63,6 +64,7 @@ const createTask = asyncHandler(async (req, res) => {
 
     const task = await Task.create({
         creator,
+        type:"regular",
         heading,
         link,
         document: uploadedDocument ? { url: uploadedDocument.url, publicId: uploadedDocument.public_id } : null,
@@ -112,6 +114,7 @@ const leetcodeCreateTask = asyncHandler(async (req, res) => {
         const scheduledAt = new Date(baseDate);
 
         // calc schedule date
+        scheduledAt.setHours(0, 0, 0, 0);
         scheduledAt.setDate(scheduledAt.getDate() + gap);
 
         // update revision obj
@@ -125,6 +128,7 @@ const leetcodeCreateTask = asyncHandler(async (req, res) => {
 
     const result = await Task.create({
         creator,
+        type:"leetcode",
         heading: title,
         link: url,
         document: null,

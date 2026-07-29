@@ -531,23 +531,18 @@ const Dashboard = () => {
                         <div className="flex justify-between gap-3">
                           <Button
                             variant="success"
-                            onClick={() =>
-                              handleStartRevisionQuiz(
-                                task._id,
-                                task.revisions.findIndex((r) => !r.completedAt),
-                              )
-                            }
+                            onClick={() => handleViewDetails(task._id)}
                             className="text-sm flex-1"
                           >
                             Take Quiz
                           </Button>
-                          <Button
+                          {/* <Button
                             variant="secondary"
                             onClick={() => handleViewDetails(task._id)}
                             className="text-sm flex-1"
                           >
                             View details
-                          </Button>
+                          </Button> */}
                         </div>
                       </div>
                     ))}
