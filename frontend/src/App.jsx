@@ -6,6 +6,7 @@ import Settings from "./pages/Settings.jsx";
 import TaskDetails from "./pages/TaskDetails.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 import { Auth0Provider } from "@auth0/auth0-react";
+import ConnectExtension from "./pages/ConnectExtension.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn, loading } = useAuth();
@@ -23,7 +24,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <Auth0Provider 
+    <Auth0Provider
       domain="dev-1uwmj24ytu0zg2oe.us.auth0.com"
       clientId="68t7SBpbQsd2AToWkmRYO4pxf0ufGBW3"
       authorizationParams={{ redirect_uri: window.location.origin }}
@@ -32,6 +33,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/connect-extension" element={<ConnectExtension/>} />
           <Route
             path="/"
             element={

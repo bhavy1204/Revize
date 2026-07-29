@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import ApiCLient from '../utils/api.js';
+import React, { createContext, useState, useEffect, useContext } from "react";
+import ApiCLient from "../utils/api.js";
 
 const AuthContext = createContext(null);
 
@@ -16,6 +16,11 @@ export const AuthProvider = ({ children }) => {
         const userData = await apiClient.authMe();
         setUser(userData.user);
         setIsLoggedIn(true);
+        if (typeof chrome !== "undefined" && chrome?.storage?.local) {
+          await chrome.storage.local.set({
+            revizeLoggedIn: true,
+          });
+        }
       } catch (error) {
         console.error("Auth check failed:", error);
         setUser(null);
@@ -33,6 +38,14 @@ export const AuthProvider = ({ children }) => {
       const userData = await apiClient.login(email, password);
       setUser(userData.data.user); // Assuming response has a .user property
       setIsLoggedIn(true);
+
+     if (typeof chrome !== "undefined" && chrome?.storage?.local) {
+       await chrome.storage.local.set({
+         revizeLoggedIn: true,
+         token: userData.data.token,
+       });
+     }
+
       setLoading(false);
       return userData;
     } catch (error) {
@@ -49,6 +62,7 @@ export const AuthProvider = ({ children }) => {
       await apiClient.logout();
       setUser(null);
       setIsLoggedIn(false);
+      await chrome.storage.local.remove(["revizeLoggedIn", "token"]);
       setLoading(false);
     } catch (error) {
       console.error("Logout failed:", error);
@@ -61,8 +75,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await apiClient.register(userData);
-      // After successful registration, you might want to automatically log them in
-      // or just redirect to login page. For now, we'll just return the response.
       setLoading(false);
       return response;
     } catch (error) {
@@ -72,7 +84,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, loading, login, logout, register, setUser, setIsLoggedIn }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoggedIn,
+        loading,
+        login,
+        logout,
+        register,
+        setUser,
+        setIsLoggedIn,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

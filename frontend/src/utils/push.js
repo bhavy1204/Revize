@@ -1,6 +1,6 @@
 import ApiCLient from "./api.js";
 
-// const apiClient = new ApiCLient();
+const apiClient = new ApiCLient();
 
 export const subscribeUser = async () => {
     const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
@@ -26,7 +26,7 @@ export const subscribeUser = async () => {
         },
     };
 
-    console.log("📡 Sending subscription sub data:", subData);
+    console.log("Sending subscription sub data:", subData);
 
     await fetch("http://localhost:3000/api/v1/notification/subscribe", {
         method: "POST",

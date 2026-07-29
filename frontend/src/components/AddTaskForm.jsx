@@ -51,26 +51,36 @@ const AddTaskForm = ({ onClose, onTaskAdded }) => {
   };
 
   return (
-    <div className="p-4 bg-gray-800 rounded-lg shadow-md text-gray-100">
-      <h3 id="add-task-title" className="text-xl font-bold mb-4 text-gray-100">
-        Add New Task
+    <div className="p-6 text-neutral-100">
+      <h3
+        id="add-task-title"
+        className="text-lg font-semibold mb-5 text-neutral-50"
+      >
+        Add new task
       </h3>
-      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-      <form onSubmit={handleSubmit}>
+
+      {error && (
+        <div className="mb-4 rounded-lg border border-red-900/50 bg-red-950/50 px-3 py-2">
+          <p className="text-sm text-red-400">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <InputField
-          label="Task Heading"
+          label="Task heading"
           id="heading"
           type="text"
           value={heading}
           onChange={(e) => setHeading(e.target.value)}
           required
-          className="bg-gray-700 text-gray-100 border-gray-600"
-          labelClassName="text-gray-200"
+          className="bg-neutral-800/60 text-neutral-100 border-neutral-700 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+          labelClassName="text-xs font-medium text-neutral-400"
         />
-        <div className="mb-4">
+
+        <div>
           <label
             htmlFor="description"
-            className="block text-sm font-bold mb-2 text-gray-200"
+            className="block text-xs font-medium text-neutral-400 mb-1.5"
           >
             Description (optional)
           </label>
@@ -79,49 +89,60 @@ const AddTaskForm = ({ onClose, onTaskAdded }) => {
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 text-gray-100 border-gray-600"
+            className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
             placeholder="Notes or context for this task"
           />
         </div>
-        <InputField
-          label="Document (optional)"
-          id="document"
-          type="file"
-          onChange={handleDocumentChange}
-          className="bg-gray-700 text-gray-100 border-gray-600 file:mr-3 file:py-1 file:px-2 file:rounded file:border-0 file:bg-gray-600 file:text-gray-100"
-          labelClassName="text-gray-200"
-          accept="image/*,.pdf,.doc,.docx"
-        />
-        {documentFile && (
-          <p className="text-gray-400 text-xs mb-4 -mt-2">
-            Selected: {documentFile.name}
-          </p>
-        )}
+
+        <div>
+          <InputField
+            label="Document (optional)"
+            id="document"
+            type="file"
+            onChange={handleDocumentChange}
+            className="bg-neutral-800/60 text-neutral-100 border-neutral-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-neutral-700 file:text-neutral-100 file:text-xs file:font-medium"
+            labelClassName="text-xs font-medium text-neutral-400"
+            accept="image/*,.pdf,.doc,.docx"
+          />
+          {documentFile && (
+            <p className="text-xs text-neutral-500 mt-1.5">
+              Selected: {documentFile.name}
+            </p>
+          )}
+        </div>
+
         <InputField
           label="Link (optional)"
           id="link"
           type="url"
           value={link}
           onChange={(e) => setLink(e.target.value)}
-          className="bg-gray-700 text-gray-100 border-gray-600"
-          labelClassName="text-gray-200"
+          className="bg-neutral-800/60 text-neutral-100 border-neutral-700 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+          labelClassName="text-xs font-medium text-neutral-400"
         />
+
         <InputField
-          label="Start Date"
+          label="Start date"
           id="startDate"
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           required
-          className="bg-gray-700 text-gray-100 border-gray-600"
-          labelClassName="text-gray-200"
+          className="bg-neutral-800/60 text-neutral-100 border-neutral-700 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+          labelClassName="text-xs font-medium text-neutral-400"
         />
-        <div className="flex justify-end space-x-2 mt-4">
-          <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
+
+        <div className="flex justify-end gap-2 pt-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancel
           </Button>
           <Button type="submit" variant="primary" disabled={loading}>
-            {loading ? 'Adding...' : 'Add Task'}
+            {loading ? "Adding…" : "Add task"}
           </Button>
         </div>
       </form>

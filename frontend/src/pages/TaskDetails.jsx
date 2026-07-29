@@ -121,281 +121,266 @@ const TaskDetails = () => {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="w-full px-4 py-4">
-        <div className="lg:flex lg:gap-6 lg:items-start">
-          {/* Large-screen sidebar */}
-          <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-gray-800 rounded-lg shadow p-4 sticky top-24 h-[calc(100vh-6rem)]">
-            <div className="flex flex-col gap-3">
-              <div className="text-gray-100 font-bold text-lg px-1">Menu</div>
+  <div className="min-h-screen bg-neutral-950">
+    <Navbar />
+    <div className="w-full px-4 py-4">
+      <div className="lg:flex lg:gap-6 lg:items-start">
+        {/* Large-screen sidebar */}
+        <aside className="hidden lg:flex lg:w-72 lg:flex-col bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sticky top-24 h-[calc(100vh-6rem)]">
+          <div className="flex flex-col gap-1">
+            <div className="text-neutral-50 font-semibold text-base px-2 mb-2">Menu</div>
 
+            <button
+              type="button"
+              onClick={handleSidebarToday}
+              className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+                activeNav === 'today'
+                  ? 'bg-violet-600/15 text-violet-300 border-l-2 border-violet-500'
+                  : 'text-neutral-300 hover:bg-neutral-800'
+              }`}
+            >
+              Today's tasks
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSidebarPending}
+              className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+                activeNav === 'pending'
+                  ? 'bg-violet-600/15 text-violet-300 border-l-2 border-violet-500'
+                  : 'text-neutral-300 hover:bg-neutral-800'
+              }`}
+            >
+              Pending
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSidebarUpcoming}
+              className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+                activeNav === 'upcoming'
+                  ? 'bg-violet-600/15 text-violet-300 border-l-2 border-violet-500'
+                  : 'text-neutral-300 hover:bg-neutral-800'
+              }`}
+            >
+              Upcoming tasks
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSidebarSettings}
+              className={`text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
+                activeNav === 'settings'
+                  ? 'bg-violet-600/15 text-violet-300 border-l-2 border-violet-500'
+                  : 'text-neutral-300 hover:bg-neutral-800'
+              }`}
+            >
+              Settings
+            </button>
+          </div>
+
+          {/* Calendar at the bottom */}
+          <div className="mt-auto pt-5 border-t border-neutral-800">
+            <div className="flex items-center justify-between mb-3">
               <button
                 type="button"
-                onClick={handleSidebarToday}
-                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'today'
-                    ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
-                    : 'hover:bg-gray-700 text-gray-200'
-                  }`}
+                className="text-neutral-400 hover:text-neutral-100 px-2 py-1 rounded-lg hover:bg-neutral-800 transition"
+                onClick={() => {
+                  const d = new Date(calendarViewDate);
+                  d.setMonth(d.getMonth() - 1);
+                  setCalendarViewDate(d);
+                }}
+                aria-label="Previous month"
               >
-                todays task
+                &lt;
               </button>
 
-              <button
-                type="button"
-                onClick={handleSidebarPending}
-                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'pending'
-                    ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
-                    : 'hover:bg-gray-700 text-gray-200'
-                  }`}
-              >
-                pending
-              </button>
+              <div className="text-neutral-100 text-sm font-medium">
+                {format(calendarViewDate, 'MMMM yyyy')}
+              </div>
 
               <button
                 type="button"
-                onClick={handleSidebarUpcoming}
-                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'upcoming'
-                    ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
-                    : 'hover:bg-gray-700 text-gray-200'
-                  }`}
+                className="text-neutral-400 hover:text-neutral-100 px-2 py-1 rounded-lg hover:bg-neutral-800 transition"
+                onClick={() => {
+                  const d = new Date(calendarViewDate);
+                  d.setMonth(d.getMonth() + 1);
+                  setCalendarViewDate(d);
+                }}
+                aria-label="Next month"
               >
-                upcoming tasks
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSidebarSettings}
-                className={`text-left px-3 py-2 rounded transition-colors ${activeNav === 'settings'
-                    ? 'bg-gray-700 border-l-4 border-blue-500 pl-2'
-                    : 'hover:bg-gray-700 text-gray-200'
-                  }`}
-              >
-                settings
+                &gt;
               </button>
             </div>
 
-            {/* Calendar at the bottom */}
-            <div className="mt-auto pt-5 border-t border-gray-700">
-              <div className="flex items-center justify-between mb-3">
-                <button
-                  type="button"
-                  className="text-gray-200 hover:text-white px-2 py-1 rounded hover:bg-gray-700 transition-colors"
-                  onClick={() => {
-                    const d = new Date(calendarViewDate);
-                    d.setMonth(d.getMonth() - 1);
-                    setCalendarViewDate(d);
-                  }}
-                  aria-label="Previous month"
-                >
-                  &lt;
-                </button>
-
-                <div className="text-gray-100 font-semibold">
-                  {format(calendarViewDate, 'MMMM yyyy')}
+            <div className="grid grid-cols-7 gap-1 mb-2 text-[11px] text-neutral-500 px-1">
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d) => (
+                <div key={d} className="text-center">
+                  {d}
                 </div>
-
-                <button
-                  type="button"
-                  className="text-gray-200 hover:text-white px-2 py-1 rounded hover:bg-gray-700 transition-colors"
-                  onClick={() => {
-                    const d = new Date(calendarViewDate);
-                    d.setMonth(d.getMonth() + 1);
-                    setCalendarViewDate(d);
-                  }}
-                  aria-label="Next month"
-                >
-                  &gt;
-                </button>
-              </div>
-
-              <div className="grid grid-cols-7 gap-1 mb-2 text-[11px] text-gray-400 px-1">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
-                  (d) => (
-                    <div key={d} className="text-center">
-                      {d}
-                    </div>
-                  ),
-                )}
-              </div>
-
-              <div className="grid grid-cols-7 gap-1 px-1">
-                {calendarDays.map((day) => {
-                  const isToday = isSameDay(day, todayDate);
-                  const isSelected = isSameDay(day, selectedCalendarDate);
-                  const inMonth = isSameMonth(day, calendarViewDate);
-
-                  return (
-                    <button
-                      type="button"
-                      key={day.toISOString()}
-                      onClick={() => setSelectedCalendarDate(day)}
-                      className={[
-                        'h-8 w-8 flex items-center justify-center rounded transition-colors text-sm',
-                        isToday
-                          ? 'bg-blue-600 text-white font-semibold hover:bg-blue-700'
-                          : isSelected
-                            ? 'bg-gray-700 text-white ring-2 ring-blue-300 hover:bg-gray-700'
-                            : inMonth
-                              ? 'text-gray-100 hover:bg-gray-700'
-                              : 'text-gray-500 hover:bg-gray-700',
-                      ].join(' ')}
-                      aria-label={`Select ${format(day, 'yyyy-MM-dd')}`}
-                    >
-                      {format(day, 'd')}
-                    </button>
-                  );
-                })}
-              </div>
+              ))}
             </div>
-          </aside>
 
-          <main className="flex-1">
-            <div className="max-w-3xl mx-auto">
-              <h1 className="text-3xl font-bold text-gray-100 mb-6">
-                {task?.heading || 'Task details'}
-              </h1>
+            <div className="grid grid-cols-7 gap-1 px-1">
+              {calendarDays.map((day) => {
+                const isToday = isSameDay(day, todayDate);
+                const isSelected = isSameDay(day, selectedCalendarDate);
+                const inMonth = isSameMonth(day, calendarViewDate);
 
-              {loading && <p className="text-center">Loading...</p>}
-              {error && (
-                <p className="text-red-400 text-center mb-4">{error}</p>
-              )}
+                return (
+                  <button
+                    type="button"
+                    key={day.toISOString()}
+                    onClick={() => setSelectedCalendarDate(day)}
+                    className={[
+                      'h-8 w-8 flex items-center justify-center rounded-lg transition text-sm',
+                      isToday
+                        ? 'bg-violet-600 text-white font-medium hover:bg-violet-500'
+                        : isSelected
+                          ? 'bg-neutral-800 text-white ring-2 ring-violet-500/40 hover:bg-neutral-700'
+                          : inMonth
+                            ? 'text-neutral-200 hover:bg-neutral-800'
+                            : 'text-neutral-600 hover:bg-neutral-800',
+                    ].join(' ')}
+                    aria-label={`Select ${format(day, 'yyyy-MM-dd')}`}
+                  >
+                    {format(day, 'd')}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </aside>
 
-              {!loading && !error && task && (
-                <div className="space-y-5">
-                  <section className="bg-gray-800 rounded-lg shadow p-5">
-                    <h2 className="text-xl font-semibold text-gray-100 mb-4">
-                      Details
-                    </h2>
+        <main className="flex-1">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-2xl font-semibold text-neutral-50 mb-6">
+              {task?.heading || 'Task details'}
+            </h1>
 
-                    <div className="space-y-2 text-gray-300">
+            {loading && (
+              <p className="text-center text-sm text-neutral-400">Loading…</p>
+            )}
+            {error && (
+              <div className="mb-4 rounded-lg border border-red-900/50 bg-red-950/50 px-3 py-2">
+                <p className="text-sm text-red-400 text-center">{error}</p>
+              </div>
+            )}
 
+            {!loading && !error && task && (
+              <div className="space-y-4">
+                <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
+                  <h2 className="text-base font-semibold text-neutral-50 mb-4">
+                    Details
+                  </h2>
 
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Description</span>
-                        <span className="text-right">
-                          {formatMaybe(task.description)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Link</span>
-                        <span className="text-right">
-                          {formatMaybe(task.link)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">Created at</span>
-                        <span className="text-right">
-                          {formatDateMaybe(task.createdAt)}
-                        </span>
-                      </div>
-
-
-
-                      <div>
-                        <div className="text-gray-400 mb-1">
-                          Document
-                        </div>
-
-                        {task.document ? (
-                          <div className="text-sm text-gray-300 space-y-1">
-
-                            <iframe
-                              src={task.document.url}
-                              width="100%"
-                              height="400"
-                              title="Document"
-                            ></iframe>
-
-                            <div>
-                              <span className="text-gray-400">
-                                URL:
-                              </span>{" "}
-                              <a href={task.document.url} target="_blank" rel="noopener noreferrer">
-                                {formatMaybe(task.document.url)}
-                              </a>
-                            </div>
-
-                          </div>
-                        ) : (
-                          <div className="text-gray-300">
-                            Not available
-                          </div>
-                        )}
-                      </div>
+                  <div className="space-y-2.5 text-sm text-neutral-300">
+                    <div className="flex justify-between gap-4">
+                      <span className="text-neutral-500">Description</span>
+                      <span className="text-right">{formatMaybe(task.description)}</span>
                     </div>
-                  </section>
 
-                  <section className="bg-gray-800 rounded-lg shadow p-5">
-                    <h2 className="text-xl font-semibold text-gray-100 mb-3">
-                      Revisions history
-                    </h2>
+                    <div className="flex justify-between gap-4">
+                      <span className="text-neutral-500">Link</span>
+                      <span className="text-right">{formatMaybe(task.link)}</span>
+                    </div>
 
-                    {revisions.length === 0 ? (
-                      <p className="text-gray-300">
-                        Not available
-                      </p>
-                    ) : (
-                      <div className="space-y-3">
-                        {revisions.map((rev, idx) => {
-                          const scheduledText = formatDateMaybe(
-                            rev?.scheduledAt,
-                            'PP',
-                          );
-                          const completedAt = rev?.completedAt;
-                          const completedText = completedAt
-                            ? formatDateMaybe(completedAt, 'PP')
-                            : null;
+                    <div className="flex justify-between gap-4">
+                      <span className="text-neutral-500">Created at</span>
+                      <span className="text-right">{formatDateMaybe(task.createdAt)}</span>
+                    </div>
 
-                          return (
-                            <div
-                              key={`${rev?.scheduledAt || idx}`}
-                              className="bg-gray-900 rounded-md p-4 border border-gray-700"
+                    <div className="pt-2">
+                      <div className="text-neutral-500 mb-2">Document</div>
+
+                      {task.document ? (
+                        <div className="text-sm text-neutral-300 space-y-2">
+                          <iframe
+                            src={task.document.url}
+                            width="100%"
+                            height="400"
+                            title="Document"
+                            className="rounded-lg border border-neutral-800"
+                          ></iframe>
+
+                          <div>
+                            <span className="text-neutral-500">URL:</span>{" "}
+                            <a
+                              href={task.document.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-violet-400 hover:text-violet-300"
                             >
-                              <div className="flex items-start justify-between gap-4">
-                                <div>
-                                  <p className="text-gray-300 text-sm">
-                                    Revision {idx + 1}
-                                  </p>
-                                  <p className="text-gray-300 text-sm mt-1">
-                                    Scheduled:{' '}
-                                    {scheduledText}
-                                  </p>
-                                  <p className="text-gray-300 text-sm mt-1">
-                                    Completed:{' '}
-                                    {completedText || 'Not available'}
-                                  </p>
-                                </div>
+                              {formatMaybe(task.document.url)}
+                            </a>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-sm text-neutral-500">Not available</div>
+                      )}
+                    </div>
+                  </div>
+                </section>
 
-                                <div className="text-right">
-                                  <p
-                                    className={[
-                                      'inline-flex items-center px-3 py-1 rounded text-xs font-semibold',
-                                      completedText
-                                        ? 'bg-green-900 text-green-200 border border-green-700'
-                                        : 'bg-blue-900 text-blue-200 border border-blue-700',
-                                    ].join(' ')}
-                                  >
-                                    {completedText ? 'Completed' : 'Pending'}
-                                  </p>
-                                </div>
+                <section className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
+                  <h2 className="text-base font-semibold text-neutral-50 mb-4">
+                    Revisions history
+                  </h2>
+
+                  {revisions.length === 0 ? (
+                    <p className="text-sm text-neutral-500">Not available</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {revisions.map((rev, idx) => {
+                        const scheduledText = formatDateMaybe(rev?.scheduledAt, 'PP');
+                        const completedAt = rev?.completedAt;
+                        const completedText = completedAt
+                          ? formatDateMaybe(completedAt, 'PP')
+                          : null;
+
+                        return (
+                          <div
+                            key={`${rev?.scheduledAt || idx}`}
+                            className="bg-neutral-950 rounded-lg p-4 border border-neutral-800"
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <p className="text-sm text-neutral-300">Revision {idx + 1}</p>
+                                <p className="text-sm text-neutral-400 mt-1">
+                                  Scheduled: {scheduledText}
+                                </p>
+                                <p className="text-sm text-neutral-400 mt-1">
+                                  Completed: {completedText || 'Not available'}
+                                </p>
+                              </div>
+
+                              <div className="text-right">
+                                <p
+                                  className={[
+                                    'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
+                                    completedText
+                                      ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900/50'
+                                      : 'bg-violet-600/15 text-violet-300 border border-violet-900/50',
+                                  ].join(' ')}
+                                >
+                                  {completedText ? 'Completed' : 'Pending'}
+                                </p>
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </section>
-                </div>
-              )}
-            </div>
-          </main>
-        </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
+              </div>
+            )}
+          </div>
+        </main>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default TaskDetails;

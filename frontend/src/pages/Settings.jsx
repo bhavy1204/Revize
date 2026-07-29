@@ -148,72 +148,93 @@ const Settings = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-neutral-950">
       <Navbar />
-      <div className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-100">
+      <div className="container mx-auto p-4 max-w-2xl">
+        <h2 className="text-2xl font-semibold mb-8 text-center text-neutral-50">
           Settings
         </h2>
 
         {message && (
-          <p className="text-green-400 text-center mb-4">{message}</p>
+          <div className="mb-5 rounded-lg border border-emerald-900/50 bg-emerald-950/50 px-3 py-2">
+            <p className="text-sm text-emerald-400 text-center">{message}</p>
+          </div>
         )}
-        {error && <p className="text-red-400 text-center mb-4">{error}</p>}
+        {error && (
+          <div className="mb-5 rounded-lg border border-red-900/50 bg-red-950/50 px-3 py-2">
+            <p className="text-sm text-red-400 text-center">{error}</p>
+          </div>
+        )}
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* Change Password */}
-          <div className="bg-gray-800 rounded-lg shadow-md text-gray-100">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
             <button
               onClick={() => toggleCard("password")}
-              className="w-full text-left p-6 text-2xl font-semibold"
+              className="w-full flex items-center justify-between text-left p-5 text-base font-medium text-neutral-100"
             >
-              Change Password
+              Change password
+              <svg
+                className={`w-4 h-4 text-neutral-500 transition-transform ${
+                  openCard === "password" ? "rotate-180" : ""
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
 
             {openCard === "password" && (
-              <div className="px-6 pb-6">
-                <form onSubmit={handleChangePassword}>
-                  <div className="mb-4">
-                    <label className="block text-gray-200 text-sm font-medium mb-2">
-                      Old Password
+              <div className="px-5 pb-5 border-t border-neutral-800 pt-5">
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+                      Old password
                     </label>
                     <input
                       type="password"
-                      className="w-full py-2 px-3 bg-gray-700 rounded text-gray-100"
+                      className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                       value={oldPassword}
                       onChange={(e) => setOldPassword(e.target.value)}
                       required
                     />
                   </div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-200 text-sm font-medium mb-2">
-                      New Password
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+                      New password
                     </label>
                     <input
                       type="password"
-                      className="w-full py-2 px-3 bg-gray-700 rounded text-gray-100"
+                      className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
                     />
                   </div>
 
-                  <div className="mb-6">
-                    <label className="block text-gray-200 text-sm font-medium mb-2">
-                      Confirm New Password
+                  <div>
+                    <label className="block text-xs font-medium text-neutral-400 mb-1.5">
+                      Confirm new password
                     </label>
                     <input
                       type="password"
-                      className="w-full py-2 px-3 bg-gray-700 rounded text-gray-100"
+                      className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                     />
                   </div>
 
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Change Password
+                  <button className="rounded-lg bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white text-sm font-medium py-2.5 px-4 transition">
+                    Change password
                   </button>
                 </form>
               </div>
@@ -221,54 +242,90 @@ const Settings = () => {
           </div>
 
           {/* Pending Revisions */}
-          <div className="bg-gray-800 rounded-lg shadow-md text-gray-100">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
             <button
               onClick={() => toggleCard("pending")}
-              className="w-full text-left p-6 text-2xl font-semibold"
+              className="w-full flex items-center justify-between text-left p-5 text-base font-medium text-neutral-100"
             >
-              Pending Revisions
+              Pending revisions
+              <svg
+                className={`w-4 h-4 text-neutral-500 transition-transform ${
+                  openCard === "pending" ? "rotate-180" : ""
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
 
             {openCard === "pending" && (
-              <div className="px-6 pb-6 space-y-4">
-                <p className="text-gray-300">
+              <div className="px-5 pb-5 border-t border-neutral-800 pt-5 space-y-4">
+                <p className="text-sm text-neutral-400">
                   Control whether the dashboard shows all pending revisions by
                   default.
                 </p>
 
-                <div className="flex items-center gap-4">
-                  <div>Show All Pending Revisions:</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-neutral-200">
+                    Show all pending revisions
+                  </span>
                   <button
                     onClick={toggleShowAllPending}
-                    className={`py-2 px-4 rounded font-medium ${showAllPendingLocal
-                      ? "bg-green-500 hover:bg-green-600"
-                      : "bg-gray-600 hover:bg-gray-500"
-                      } text-white`}
+                    className={`text-sm font-medium py-1.5 px-3 rounded-lg transition ${
+                      showAllPendingLocal
+                        ? "bg-violet-600 hover:bg-violet-500 text-white"
+                        : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+                    }`}
                   >
                     {showAllPendingLocal ? "Enabled" : "Disabled"}
                   </button>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div>Show All Upcoming Revisions:</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-neutral-200">
+                    Show all upcoming revisions
+                  </span>
                   <UpcomingToggle />
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bg-gray-800 rounded-lg shadow-md text-gray-100">
+          {/* Notifications */}
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
             <button
               onClick={() => toggleCard("notifications")}
-              className="w-full text-left p-6 text-2xl font-semibold"
+              className="w-full flex items-center justify-between text-left p-5 text-base font-medium text-neutral-100"
             >
               Notifications
+              <svg
+                className={`w-4 h-4 text-neutral-500 transition-transform ${
+                  openCard === "notifications" ? "rotate-180" : ""
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
 
             {openCard === "notifications" && (
-              <div className="px-6 pb-6 space-y-4">
-                <p className="text-gray-300">
-                  Get daily reminders to stay consistent
+              <div className="px-5 pb-5 border-t border-neutral-800 pt-5 space-y-4">
+                <p className="text-sm text-neutral-400">
+                  Get daily reminders to stay consistent.
                 </p>
                 <EnableNotifications />
               </div>
@@ -276,40 +333,55 @@ const Settings = () => {
           </div>
 
           {/* Account Actions */}
-          <div className="bg-gray-800 rounded-lg shadow-md text-gray-100">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
             <button
               onClick={() => toggleCard("account")}
-              className="w-full text-left p-6 text-2xl font-semibold"
+              className="w-full flex items-center justify-between text-left p-5 text-base font-medium text-neutral-100"
             >
-              Account Actions
+              Account actions
+              <svg
+                className={`w-4 h-4 text-neutral-500 transition-transform ${
+                  openCard === "account" ? "rotate-180" : ""
+                }`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
 
             {openCard === "account" && (
-              <div className="px-6 pb-6 flex flex-wrap gap-4">
+              <div className="px-5 pb-5 border-t border-neutral-800 pt-5 flex flex-wrap gap-3">
                 <button
                   onClick={handleDeleteAccount}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  className="rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium py-2.5 px-4 transition"
                 >
-                  Delete Account
+                  Delete account
                 </button>
 
                 <button
                   onClick={handleExportToPdf}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+                  className="rounded-lg border border-neutral-700 hover:bg-neutral-800 text-neutral-200 text-sm font-medium py-2.5 px-4 transition"
                 >
-                  Export Revisions to PDF
+                  Export revisions to PDF
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Logout (at the very end, as requested) */}
-        <div className="mt-8 flex justify-center">
+        {/* Logout */}
+        <div className="mt-8 flex justify-center pb-8">
           <button
             type="button"
             onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded"
+            className="rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-medium py-2.5 px-6 transition"
           >
             Logout
           </button>

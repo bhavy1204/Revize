@@ -35,64 +35,73 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
-          Login
-        </h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-200 text-sm font-bold mb-2"
-            >
+  <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
+    <div className="w-full max-w-sm">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 shadow-xl shadow-black/20">
+        <div className="mb-8 text-center">
+          <h2 className="text-xl font-semibold text-neutral-50">Welcome back</h2>
+          <p className="text-sm text-neutral-400 mt-1">Sign in to continue</p>
+        </div>
+
+        {error && (
+          <div className="mb-5 rounded-lg border border-red-900/50 bg-red-950/50 px-3 py-2">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-xs font-medium text-neutral-400 mb-1.5">
               Email
             </label>
             <input
               type="email"
               id="email"
-              className="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="you@example.com"
+              className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-gray-200 text-sm font-bold mb-2"
-            >
+
+          <div>
+            <label htmlFor="password" className="block text-xs font-medium text-neutral-400 mb-1.5">
               Password
             </label>
             <input
               type="password"
               id="password"
-              className="shadow appearance-none border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              placeholder="••••••••"
+              className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
-          <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Sign In
-            </button>
-            <a
-              href="/register"
-              className="inline-block align-baseline font-bold text-sm text-blue-400 hover:text-blue-300"
-            >
-              Don't have an account?
-            </a>
-          </div>
-          <button onClick={handleGithubLogin}>Continue with GitHub</button>
+
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white text-sm font-medium py-2.5 transition mt-2"
+          >
+            Sign in
+          </button>
+
+          {/* <button onClick={handleGithubLogin} className="w-full mt-3 rounded-lg border border-neutral-700 hover:bg-neutral-800 text-sm font-medium py-2.5 transition text-neutral-200 flex items-center justify-center gap-2">
+            Continue with GitHub
+          </button> */}
         </form>
+
+        <p className="mt-6 text-center text-sm text-neutral-400">
+          Don't have an account?{" "}
+          <a href="/register" className="font-medium text-violet-400 hover:text-violet-300">
+            Sign up
+          </a>
+        </p>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Login;

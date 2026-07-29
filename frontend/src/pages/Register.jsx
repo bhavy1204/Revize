@@ -94,25 +94,48 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-100">
-          Register
-        </h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+  <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
+    <div className="w-full max-w-sm">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-8 shadow-xl shadow-black/20">
+        <div className="mb-6 text-center">
+          <h2 className="text-xl font-semibold text-neutral-50">Create account</h2>
+          <p className="text-sm text-neutral-400 mt-1">
+            {step === 1 && "Enter your email to get started"}
+            {step === 2 && "Check your inbox for a code"}
+            {step === 3 && "Set up your profile"}
+          </p>
+        </div>
 
+        {/* Step indicator */}
+        <div className="flex items-center gap-2 mb-6">
+          {[1, 2, 3].map((s) => (
+            <div
+              key={s}
+              className={`h-1 flex-1 rounded-full transition ${
+                s <= step ? "bg-violet-500" : "bg-neutral-800"
+              }`}
+            />
+          ))}
+        </div>
+
+        {error && (
+          <div className="mb-5 rounded-lg border border-red-900/50 bg-red-950/50 px-3 py-2">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* STEP 1: EMAIL */}
           {step === 1 && (
             <>
-              <div className="mb-4">
-                <label className="block text-gray-200 text-sm font-bold mb-2">
+              <div>
+                <label className="block text-xs font-medium text-neutral-400 mb-1.5">
                   Email
                 </label>
                 <input
                   type="email"
-                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  placeholder="you@example.com"
+                  className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -121,9 +144,9 @@ const Register = () => {
 
               <button
                 onClick={handleSendOtp}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+                className="w-full rounded-lg bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white text-sm font-medium py-2.5 transition"
               >
-                Send OTP
+                Send code
               </button>
             </>
           )}
@@ -131,15 +154,16 @@ const Register = () => {
           {/* STEP 2: OTP */}
           {step === 2 && (
             <>
-              <p className="text-gray-300 mb-4 text-sm">
-                OTP sent to <span className="font-semibold">{email}</span>
+              <p className="text-sm text-neutral-400">
+                Code sent to{" "}
+                <span className="font-medium text-neutral-200">{email}</span>
               </p>
 
-              <div className="mb-4">
+              <div>
                 <input
                   type="text"
-                  placeholder="Enter OTP"
-                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  placeholder="Enter code"
+                  className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   required
@@ -148,17 +172,17 @@ const Register = () => {
 
               <button
                 onClick={handleVerifyOtp}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded w-full"
+                className="w-full rounded-lg bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white text-sm font-medium py-2.5 transition"
               >
-                Verify OTP
+                Verify code
               </button>
 
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="text-sm text-blue-400 mt-3"
+                className="w-full text-sm text-neutral-400 hover:text-neutral-300 transition"
               >
-                Change Email
+                Change email
               </button>
             </>
           )}
@@ -166,33 +190,33 @@ const Register = () => {
           {/* STEP 3: REGISTER */}
           {step === 3 && (
             <>
-              <div className="mb-4">
+              <div>
                 <input
                   type="text"
-                  placeholder="Full Name"
-                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  placeholder="Full name"
+                  className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   required
                 />
               </div>
 
-              <div className="mb-4">
+              <div>
                 <input
                   type="text"
                   placeholder="Username"
-                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   value={username}
                   onChange={(e) => setUserName(e.target.value)}
                   required
                 />
               </div>
 
-              <div className="mb-6">
+              <div>
                 <input
                   type="password"
                   placeholder="Password"
-                  className="shadow border border-gray-600 rounded w-full py-2 px-3 bg-gray-700 text-gray-100"
+                  className="w-full rounded-lg bg-neutral-800/60 border border-neutral-700 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -201,16 +225,17 @@ const Register = () => {
 
               <button
                 type="submit"
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+                className="w-full rounded-lg bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white text-sm font-medium py-2.5 transition"
               >
-                Register
+                Create account
               </button>
             </>
           )}
         </form>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default Register;

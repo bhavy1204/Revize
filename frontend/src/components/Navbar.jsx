@@ -9,21 +9,32 @@ const Navbar = () => {
     return null; // Or a loading spinner for the Navbar itself
   }
 
-  // Only render Navbar if logged in. ProtectedRoute should handle redirection if not.
   if (!isLoggedIn) {
     return null;
   }
 
   return (
-    <nav className="bg-gray-800 p-4 text-white">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-lg font-bold">
-          <Link to="/">Revize</Link>
-        </div>
-        {user && <div className="text-gray-300">Hello, {user.fullName}!</div>}
-      </div>
-    </nav>
-  );
+  <nav className="bg-neutral-900 border-b border-neutral-800 px-4 py-3 text-neutral-100 sticky top-0 z-30">
+    <div className="container mx-auto flex justify-between items-center">
+      <Link to="/" className="text-base font-semibold text-neutral-50">
+        Revize
+      </Link>
+
+      {user ? (
+        <span className="text-sm text-neutral-400">
+          Hello, <span className="text-neutral-200 font-medium">{user.fullName}</span>
+        </span>
+      ) : (
+        <Link
+          to="/login"
+          className="rounded-lg bg-violet-600 hover:bg-violet-500 active:bg-violet-700 text-white text-sm font-medium py-2 px-4 transition"
+        >
+          Log in
+        </Link>
+      )}
+    </div>
+  </nav>
+);
 };
 
 export default Navbar;
