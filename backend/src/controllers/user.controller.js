@@ -131,116 +131,111 @@ const verifyOtp = asyncHandler(async (req, res) => {
 
 })
 
-const googleLogin = asyncHandler(async (req, res) => {
-    const { token } = req.body;
+const oAuthCallback = asyncHandler(async (req, res) => {
+    // const { idToken } = req.body;
 
-    if (!token) {
-        throw new APIError(400, "Google token is required");
-    }
+    // if (!idToken) {
+    //     throw new APIError(400, "Google ID token is required");
+    // }
 
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    // let payload;
+    // try {
+    //     const ticket = await googleClient.verifyIdToken({
+    //         idToken,
+    //         audience: process.env.GOOGLE_CLIENT_ID,
+    //     });
+    //     payload = ticket.getPayload();
+    // } catch {
+    //     throw new APIError(401, "Invalid Google token");
+    // }
 
-    const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
-    });
+    // const { sub: providerId, email, name, email_verified } = payload;
 
-    const payload = ticket.getPayload();
-    const { email, name } = payload;
+    // if (!email_verified) {
+    //     throw new APIError(400, "Google account email is not verified");
+    // }
 
-    let user = await User.findOne({ email });
+    // // upsert: find existing user or create new one
+    // let user = await User.findOne({ email });
 
-    if (!user) {
-        const username = generateFromEmail(email, { randomDigits: 2, stripLeadingDigits: true });
+    // if (user && !user.isOAuth) {
+    //     throw new APIError(400, "This email is registered with a password. Please login with email and password.");
+    // }
 
-        user = await User.create({
-            fullName: name,
-            email,
-            username,
-            isOAuth: true,
-            authProvider: "google",
-            isEmailVerified: true,
-        });
-    }
+    // if (!user) {
+    //     user = await User.create({
+    //         fullName: name,
+    //         email,
+    //         isOAuth: true,
+    //         authProvider: "google",
+    //         providerId,
+    //         isEmailVerified: true, // Google already verified it
+    //     });
+    // }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+    // const { accessToken, refreshToken } = await generateTokens(user);
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
-
-    const accessOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
-    };
-
-    const refreshOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    };
-
-    return res
-        .status(200)
-        .cookie("accessToken", accessToken, accessOptions)
-        .cookie("refreshToken", refreshToken, refreshOptions)
-        .json(
-            new APIResponse(
-                200,
-                { user: loggedInUser },
-                "User logged in via Google"
-            )
-        );
+    // return res
+    //     .status(200)
+    //     .cookie("accessToken", accessToken, COOKIE_OPTIONS)
+    //     .cookie("refreshToken", refreshToken, COOKIE_OPTIONS)
+    //     .json(
+        //     new APIResponse(
+        //         200,
+        //         { _id: user._id, fullName: user.fullName, email: user.email },
+        //         "Logged in with Google successfully"
+        //     )
+        // );
 });
 
 const githubAuth = asyncHandler(async (req, res) => {
-    const { sub, email, name } = req.auth0User;
+    // const { sub, email, name } = req.auth0User;
 
-    let user = await User.findOne({ authId: sub });
+    // let user = await User.findOne({ authId: sub });
 
-    if (!user) {
-        const username = generateFromEmail(email, { randomDigits: 2, stripLeadingDigits: true });
-        user = await User.create({
-            username,
-            fullName: name,
-            email,
-            authId: sub,
-            authProvider: "github",
-            isOAuth: true,
-            isEmailVerified: true,
-        });
-    }
+    // if (!user) {
+    //     const username = generateFromEmail(email, { randomDigits: 2, stripLeadingDigits: true });
+    //     user = await User.create({
+    //         username,
+    //         fullName: name,
+    //         email,
+    //         authId: sub,
+    //         authProvider: "github",
+    //         isOAuth: true,
+    //         isEmailVerified: true,
+    //     });
+    // }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+    // const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
 
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+    // const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-    const accessOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
-    };
+    // const accessOptions = {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: "lax",
+    //     maxAge: 15 * 60 * 1000,
+    // };
 
-    const refreshOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    };
+    // const refreshOptions = {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: "lax",
+    //     maxAge: 7 * 24 * 60 * 60 * 1000,
+    // };
 
-    res
-        .status(200)
-        .cookie("accessToken", accessToken, accessOptions)
-        .cookie("refreshToken", refreshToken, refreshOptions)
-        .json(
-            new APIResponse(
-                200,
-                { user: loggedInUser },
-                "User logged in via GitHub"
-            )
-        );
+    // res
+    //     .status(200)
+    //     .cookie("accessToken", accessToken, accessOptions)
+    //     .cookie("refreshToken", refreshToken, refreshOptions)
+    //     .json(
+    //         new APIResponse(
+    //             200,
+    //             { user: loggedInUser },
+    //             "User logged in via GitHub"
+    //         )
+    //     );
+
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -452,7 +447,6 @@ export {
     registerUser,
     sendOtp,
     verifyOtp,
-    googleLogin,
     githubAuth,
     loginUser,
     authMe,

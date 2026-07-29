@@ -5,7 +5,6 @@ const verifiedEmailSchema = new mongoose.Schema({
         type: String,
         required: true,
         lowercase: true,
-        unique: true
     },
     verifiedAt: {
         type: Date,

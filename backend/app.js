@@ -26,9 +26,11 @@ import taskRouter from "./src/routes/task.route.js"
 import userRouter from "./src/routes/user.route.js"
 import utilityRouter from "./src/routes/utility.route.js"
 import notificationRouter from "./src/routes/notification.route.js"
+import exetensionROuter from "./src/routes/extension.routes.js"
 
 // Routes Declaration
 app.use("/api/v1/healthCheck", healthCheckRouter);
+app.use("/api/v1/auth", exetensionROuter)
 app.use("/api/v1/task", taskRouter)
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/utility", utilityRouter)

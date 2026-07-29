@@ -37,6 +37,13 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    extensionTokenHash: {
+        type: String,
+        select: false // never returned by default queries
+    },
+    extensionTokenCreatedAt: {
+        type: Date
+    },
     plan: {
         type: String,
         enum: ["free", "pro"],
