@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { addDays, format, isSameDay, isSameMonth, startOfMonth, startOfWeek } from 'date-fns';
 import Navbar from '../components/Navbar.jsx';
 import ApiCLient from '../utils/api.js';
+import QuizModal from '../components/QuizModal.jsx';
 
 const apiClient = new ApiCLient();
 
@@ -13,6 +14,11 @@ const TaskDetails = () => {
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [quizTarget, setQuizTarget] = useState(null);
+
+  const handleStartQuiz = (revisionIndex) => {
+    setQuizTarget({ revisionIndex });
+  };
 
   // Sidebar state (mirrors Dashboard)
   const todayDate = useRef(new Date()).current;
@@ -337,6 +343,7 @@ const TaskDetails = () => {
                         const completedText = completedAt
                           ? formatDateMaybe(completedAt, 'PP')
                           : null;
+                        const firstPendingIndex = revisions.findIndex((r) => !r?.completedAt);
 
                         return (
                           <div
@@ -345,26 +352,38 @@ const TaskDetails = () => {
                           >
                             <div className="flex items-start justify-between gap-4">
                               <div>
-                                <p className="text-sm text-neutral-300">Revision {idx + 1}</p>
+                                <p className="text-sm text-neutral-300">
+                                  Revision {idx + 1}
+                                </p>
                                 <p className="text-sm text-neutral-400 mt-1">
                                   Scheduled: {scheduledText}
                                 </p>
                                 <p className="text-sm text-neutral-400 mt-1">
-                                  Completed: {completedText || 'Not available'}
+                                  Completed: {completedText || "Not available"}
                                 </p>
                               </div>
 
-                              <div className="text-right">
+                              <div className="text-right flex flex-col items-end gap-2">
                                 <p
                                   className={[
-                                    'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium',
+                                    "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium",
                                     completedText
-                                      ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900/50'
-                                      : 'bg-violet-600/15 text-violet-300 border border-violet-900/50',
-                                  ].join(' ')}
+                                      ? "bg-emerald-950/60 text-emerald-400 border border-emerald-900/50"
+                                      : "bg-violet-600/15 text-violet-300 border border-violet-900/50",
+                                  ].join(" ")}
                                 >
-                                  {completedText ? 'Completed' : 'Pending'}
+                                  {completedText ? "Completed" : "Pending"}
                                 </p>
+
+                                {!completedText &&
+                                  idx === firstPendingIndex && (
+                                    <button
+                                      onClick={() => handleStartQuiz(idx)}
+                                      className="text-xs px-3 py-1 rounded-md bg-violet-600 text-white hover:bg-violet-500"
+                                    >
+                                      Take Quiz
+                                    </button>
+                                  )}
                               </div>
                             </div>
                           </div>
@@ -376,6 +395,19 @@ const TaskDetails = () => {
               </div>
             )}
           </div>
+
+          {quizTarget && (
+            <QuizModal
+              taskId={task._id}
+              revisionIndex={quizTarget.revisionIndex}
+              onClose={() => setQuizTarget(null)}
+              onPassed={() => {
+                // refetch this task's detail, not the whole task list
+                fetchTaskDetails(); // or whatever your detail-fetch function is called
+                setQuizTarget(null);
+              }}
+            />
+          )}
         </main>
       </div>
     </div>

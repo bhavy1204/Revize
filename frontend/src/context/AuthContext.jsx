@@ -32,6 +32,15 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
+  useEffect(() => {
+    const handleForceLogout = () => {
+      setUser(null);
+      setIsLoggedIn(false);
+    };
+    window.addEventListener("auth:logout", handleForceLogout);
+    return () => window.removeEventListener("auth:logout", handleForceLogout);
+  }, []);
+
   const login = async (email, password) => {
     setLoading(true);
     try {

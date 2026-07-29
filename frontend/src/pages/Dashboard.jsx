@@ -21,6 +21,7 @@ const Dashboard = () => {
   const [todayRevisions, setTodayRevisions] = useState([]);
   const [allPendingRevisions, setAllPendingRevisions] = useState([]);
   const [upcomingRevisions, setUpcomingRevisions] = useState([]);
+  const [quizTarget, setQuizTarget] = useState(null);
   const [showAllPending, setShowAllPending] = useState(() => {
     try {
       const v = localStorage.getItem("showAllPending");
@@ -125,6 +126,10 @@ const Dashboard = () => {
       window.removeEventListener("storage", upcomingHandler);
     };
   }, []);
+
+  const handleStartRevisionQuiz = (taskId, revisionIndex) => {
+    setQuizTarget({ taskId, revisionIndex });
+  };
 
   const handleCompleteRevision = async (taskId) => {
     try {
@@ -526,10 +531,15 @@ const Dashboard = () => {
                         <div className="flex justify-between gap-3">
                           <Button
                             variant="success"
-                            onClick={() => handleCompleteRevision(task._id)}
+                            onClick={() =>
+                              handleStartRevisionQuiz(
+                                task._id,
+                                task.revisions.findIndex((r) => !r.completedAt),
+                              )
+                            }
                             className="text-sm flex-1"
                           >
-                            Complete
+                            Take Quiz
                           </Button>
                           <Button
                             variant="secondary"

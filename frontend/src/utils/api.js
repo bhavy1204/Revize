@@ -4,12 +4,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/
 
 class ApiCLient {
     constructor() {
-        this.baseURL = API_BASE_URL
+        this.baseURL = API_BASE_URL;
+        this.isRefreshing = false;
+        this.refreshSubscribers = [];
     }
 
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`
-
+        const url = `${this.baseURL}${endpoint}`;
         const isFormData = options.body instanceof FormData;
 
         const config = {
@@ -21,23 +22,58 @@ class ApiCLient {
             credentials: "include",
         };
 
-        try {
-            const res = await fetch(url, config);
-            const data = await res.json();
+        const res = await fetch(url, config);
 
-            if (!res.ok) {
-                throw new Error(data.message || "request failed")
+        // If access token expired, try a silent refresh then retry once
+        if (res.status === 401 && !options._retry && !endpoint.includes("/refresh-token")) {
+            if (this.isRefreshing) {
+                // wait for the in-flight refresh, then retry
+                return new Promise((resolve, reject) => {
+                    this.refreshSubscribers.push((error) => {
+                        if (error) reject(error);
+                        else resolve(this.request(endpoint, { ...options, _retry: true }));
+                    });
+                });
             }
 
-            return data;
-        } catch (error) {
-            throw error
+            this.isRefreshing = true;
+            try {
+                await this.refreshToken();
+                this.isRefreshing = false;
+                this.refreshSubscribers.forEach((cb) => cb(null));
+                this.refreshSubscribers = [];
+                return this.request(endpoint, { ...options, _retry: true });
+            } catch (refreshError) {
+                this.isRefreshing = false;
+                this.refreshSubscribers.forEach((cb) => cb(refreshError));
+                this.refreshSubscribers = [];
+                window.dispatchEvent(new Event("auth:logout"));
+                throw refreshError;
+            }
         }
 
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "request failed");
+        }
+
+        return data;
     }
 
 
     // AUth methods 
+
+    async refreshToken() {
+        const res = await fetch(`${this.baseURL}/user/refresh-token`, {
+            method: "POST",
+            credentials: "include",
+        });
+        if (!res.ok) {
+            throw new Error("refresh failed");
+        }
+        return res.json();
+    }
 
     async register(userData) {
         return this.request('/user/register', {
@@ -173,6 +209,19 @@ class ApiCLient {
         })
     }
 
+    async startRevisionQuiz(taskId, revisionIndex) {
+        return this.request(`/task/${taskId}/revisions/${revisionIndex}/quiz/start`, {
+            method: 'POST'
+        });
+    }
+
+    async submitRevisionQuiz(taskId, revisionIndex, answers) {
+        return this.request(`/task/${taskId}/revisions/${revisionIndex}/quiz/submit`, {
+            method: 'POST',
+            body: JSON.stringify({ answers })
+        });
+    }
+
     async completeRevision(taskId) {
         return this.request("/task/complete-revision", {
             method: 'PATCH',
@@ -222,3 +271,10 @@ class ApiCLient {
 }
 
 export default ApiCLient;
+
+
+
+
+    
+
+    

@@ -6,6 +6,7 @@ import { asyncHandler } from "../utils/AsyncHandler.js";
 import { cleanupCompletedTask } from "../utils/taskCleanup.js";
 import { User } from "../models/user.model.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js"
+import { generateQuizQuestions } from "../utils/generateQuiz.js";
 
 
 const createTask = asyncHandler(async (req, res) => {
@@ -77,23 +78,23 @@ const createTask = asyncHandler(async (req, res) => {
     )
 })
 
-const leetcodeCreateTask = asyncHandler(async (req,res)=>{
+const leetcodeCreateTask = asyncHandler(async (req, res) => {
 
-    const {title,url, problemId} = req.body;
-    const creator= req.user?._id;
+    const { title, url, problemId } = req.body;
+    const creator = req.user?._id;
 
-    if(!creator){
+    if (!creator) {
         console.log(req.user);
         throw new APIError(400, "Creator ID required")
     }
 
-    if(!title || !url || !problemId){
+    if (!title || !url || !problemId) {
         throw new APIError(400, "title, url and problemId required")
     }
 
     const user = await User.findById(creator);
 
-    if(!user){
+    if (!user) {
         throw new APIError(400, "No such creator found")
     }
 
@@ -124,24 +125,111 @@ const leetcodeCreateTask = asyncHandler(async (req,res)=>{
 
     const result = await Task.create({
         creator,
-        heading:title,
-        link:url,
+        heading: title,
+        link: url,
         document: null,
-        description:null,
+        description: null,
         revisions
     })
 
     user.taskCount = user.taskCount + 1;
-    await user.save({ validateBeforeSave: false });    
+    await user.save({ validateBeforeSave: false });
 
     res.status(200).json(
         new APIResponse(200, result, "All done")
     )
 })
 
+const startRevisionQuiz = asyncHandler(async (req, res) => {
+    const { taskId, revisionIndex } = req.params;
+
+    const task = await Task.findOne({ _id: taskId, creator: req.user._id });
+
+    if (!task) 
+        throw new APIError(404, "Task not found");
+
+
+    if (!task.questionBankGenerated) {
+        const questions = await generateQuizQuestions(task.heading, task.description);
+        task.questionBank = questions;
+        task.questionBankGenerated = true;
+    }
+
+    const revision = task.revisions[revisionIndex];
+    if (!revision) throw new APIError(404, "Revision not found");
+
+    if (revision.quiz?.questionIds?.length) {
+        const existingQuestions = task.questionBank.filter(q =>
+            revision.quiz.questionIds.some(id => id.equals(q._id))
+        );
+        await task.save();
+        return res.status(200).json(new APIResponse(200, {
+            questions: existingQuestions.map(q => ({ _id: q._id, question: q.question, options: q.options }))
+        }, "Quiz already in progress"));
+    }
+
+    const unused = task.questionBank.filter(q => !q.used);
+    if (unused.length < 6) throw new APIError(400, "Not enough questions left in bank");
+
+    const picked = unused.sort(() => 0.5 - Math.random()).slice(0, 6);
+    picked.forEach(q => { q.used = true; });
+
+    revision.quiz = {
+        questionIds: picked.map(q => q._id),
+        answers: [],
+        score: null,
+        passed: null
+    };
+
+    await task.save();
+
+    return res.status(200).json(new APIResponse(200, {
+        questions: picked.map(q => ({ _id: q._id, question: q.question, options: q.options }))
+    }, "Quiz started"));
+});
+
+
+const submitRevisionQuiz = asyncHandler(async (req, res) => {
+    const { taskId, revisionIndex } = req.params;
+    const { answers } = req.body;
+
+    const task = await Task.findOne({ _id: taskId, creator: req.user._id });
+    if (!task) throw new APIError(404, "Task not found");
+
+    const revision = task.revisions[revisionIndex];
+    if (!revision?.quiz?.questionIds?.length) throw new APIError(400, "Quiz not started for this revision");
+
+    let correctCount = 0;
+    const gradedAnswers = answers.map(a => {
+        const question = task.questionBank.id(a.questionId);
+        const isCorrect = question && question.correctIndex === a.selectedIndex;
+        if (isCorrect) correctCount++;
+        return { questionId: a.questionId, selectedIndex: a.selectedIndex, isCorrect };
+    });
+
+    const passed = correctCount >= 4;
+
+    revision.quiz.answers = gradedAnswers;
+    revision.quiz.score = correctCount;
+    revision.quiz.passed = passed;
+
+    if (passed) {
+        revision.completedAt = new Date();
+    }
+
+    await task.save();
+
+    return res.status(200).json(new APIResponse(200, {
+        score: correctCount,
+        passed,
+        correctAnswers: gradedAnswers
+    }, passed ? "Revision passed" : "Revision failed — try again next scheduled attempt"));
+});
+
+
 const getTask = asyncHandler(async (req, res) => {
     const taskId = req.params.taskId;
-    if(!taskId){
+    if (!taskId) {
         throw new APIError(400, "taskId required")
     }
 
@@ -356,6 +444,8 @@ export {
     getTodaysRevision,
     getAllPendingRevision,
     getAllUpcomingRevision,
+    startRevisionQuiz,
+    submitRevisionQuiz,
     completeRevision,
     deleteTask,
     getTask,

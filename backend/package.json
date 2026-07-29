@@ -25,6 +25,7 @@
     "mongoose": "^9.1.1",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.12",
+    "openai": "^7.1.0",
     "pdfkit": "^0.17.2",
     "unique-username-generator": "^1.5.1",
     "web-push": "^3.6.7"

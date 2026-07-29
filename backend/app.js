@@ -36,7 +36,7 @@ app.use("/api/v1/user", userRouter)
 app.use("/api/v1/utility", utilityRouter)
 app.use("/api/v1/notification", notificationRouter)
 
-app.use(express.static("public")); // Serve static files after API routes
+app.use(express.static("public"));
 
 app.use((err, req, res, next) => {
     console.error(err);

@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { createTask, getTodaysRevision, getAllPendingRevision, getAllUpcomingRevision, completeRevision, deleteTask , leetcodeCreateTask, getTask} from "../controllers/task.controller.js"
+import {
+    createTask, getTodaysRevision, getAllPendingRevision, getAllUpcomingRevision, completeRevision, deleteTask, leetcodeCreateTask, getTask, startRevisionQuiz,
+    submitRevisionQuiz,
+} from "../controllers/task.controller.js"
 import { verifyJwt } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
 
@@ -14,6 +17,8 @@ router.route("/leetcode/create-task").post(leetcodeCreateTask)
 router.route("/get/today-revision").get(getTodaysRevision)
 router.route("/get/all-pending-revision").get(getAllPendingRevision)
 router.route("/get/all-upcoming-revision").get(getAllUpcomingRevision)
+router.route("/:taskId/revisions/:revisionIndex/quiz/start").post(startRevisionQuiz);
+router.route("/:taskId/revisions/:revisionIndex/quiz/submit").post(submitRevisionQuiz);
 router.route("/complete-revision").patch(completeRevision)
 router.route("/delete-task").delete(deleteTask)
 
