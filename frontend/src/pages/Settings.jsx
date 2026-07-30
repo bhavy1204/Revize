@@ -62,10 +62,11 @@ const Settings = () => {
     return (
       <button
         onClick={toggle}
-        className={`py-2 px-4 rounded font-medium ${val
-          ? "bg-green-500 hover:bg-green-600"
-          : "bg-gray-600 hover:bg-gray-500"
-          } text-white`}
+        className={`text-sm font-medium py-1.5 px-3 rounded-lg transition ${
+          val
+            ? "bg-violet-600 hover:bg-violet-500 text-white"
+            : "bg-neutral-800 hover:bg-neutral-700 text-neutral-300"
+        }`}
       >
         {val ? "Enabled" : "Disabled"}
       </button>
@@ -135,9 +136,7 @@ const Settings = () => {
     setMessage("");
     setError("");
     try {
-      if (
-        !window.confirm("Are you sure you want to logout from Revize?")
-      ) {
+      if (!window.confirm("Are you sure you want to logout from Revize?")) {
         return;
       }
       await logout();
@@ -242,7 +241,7 @@ const Settings = () => {
           </div>
 
           {/* Pending Revisions */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
+          {/* <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
             <button
               onClick={() => toggleCard("pending")}
               className="w-full flex items-center justify-between text-left p-5 text-base font-medium text-neutral-100"
@@ -296,7 +295,7 @@ const Settings = () => {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Notifications */}
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">

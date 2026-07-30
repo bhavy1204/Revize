@@ -299,22 +299,24 @@ const authMe = asyncHandler(async (req, res) => {
     const token = req.cookies?.accessToken || req.headers["authorization"]?.split(" ")[1];
 
     if (!token) {
-        throw new APIError(401, "Token required")
+        throw new APIError(401, "Token required");
     }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    } catch (err) {
+        throw new APIError(401, "Invalid or expired token");
+    }
 
-    const user = await User.findById(decoded?._id).select("-password")
+    const user = await User.findById(decoded?._id).select("-password");
 
     if (!user) {
-        throw new APIError(404, "No such user exists")
+        throw new APIError(404, "No such user exists");
     }
 
-    res.status(200).json(
-        new APIResponse(200, user, "User authenticated")
-    )
-
-})
+    res.status(200).json(new APIResponse(200, user, "User authenticated"));
+});
 
 
 const logout = asyncHandler(async (req, res) => {
@@ -339,6 +341,8 @@ const logout = asyncHandler(async (req, res) => {
 
 const refreshToken = asyncHandler(async (req, res) => {
 
+    console.log("USER REACHED TO REFRESH TOKEN CONTROLLER")
+
     const incomingToken = req.cookies?.refreshToken || req.body.refreshToken
 
     if (!incomingToken) {
@@ -346,6 +350,8 @@ const refreshToken = asyncHandler(async (req, res) => {
     }
 
     const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET)
+
+    console.log("Decoding done ")
 
     const user = await User.findById(decodedToken?._id).select("-password")
 

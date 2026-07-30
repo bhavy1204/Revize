@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const userData = await apiClient.authMe();
-        setUser(userData.user);
+        setUser(userData.data);
         setIsLoggedIn(true);
         if (typeof chrome !== "undefined" && chrome?.storage?.local) {
           await chrome.storage.local.set({

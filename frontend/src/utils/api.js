@@ -132,12 +132,6 @@ class ApiCLient {
         })
     }
 
-    async refreshToken() {
-        return this.request('/user/refresh-token', {
-            method: 'GET'
-        })
-    }
-
     // user methods
 
     async changePassword(oldPassword, newPassword) {

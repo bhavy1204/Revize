@@ -149,10 +149,10 @@ const startRevisionQuiz = asyncHandler(async (req, res) => {
 
     const task = await Task.findOne({ _id: taskId, creator: req.user._id });
 
-    if (!task) 
+    if (!task)
         throw new APIError(404, "Task not found");
 
-
+    
     if (!task.questionBankGenerated) {
         const questions = await generateQuizQuestions(task.heading, task.description);
         task.questionBank = questions;
@@ -172,11 +172,11 @@ const startRevisionQuiz = asyncHandler(async (req, res) => {
         }, "Quiz already in progress"));
     }
 
-    const unused = task.questionBank.filter(q => !q.used);
-    if (unused.length < 6) throw new APIError(400, "Not enough questions left in bank");
+    if (task.questionBank.length < 6) throw new APIError(400, "Not enough questions in bank");
 
-    const picked = unused.sort(() => 0.5 - Math.random()).slice(0, 6);
-    picked.forEach(q => { q.used = true; });
+    const picked = [...task.questionBank]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 6);
 
     revision.quiz = {
         questionIds: picked.map(q => q._id),

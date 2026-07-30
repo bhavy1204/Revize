@@ -3,21 +3,25 @@ import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export const generateQuizQuestions = async (title, description) => {
-    const prompt = `You are a quiz generator. Based on the following topic, generate exactly 30 multiple-choice questions to help someone revise/retain this topic through spaced repetition.
+    const prompt = `You are a quiz generator. Based on the following topic, generate exactly 10 multiple-choice questions to help someone revise/retain this topic through spaced repetition.
 
 Title: ${title}
 Description: ${description || "No additional description provided."}
 
 Difficulty: moderate.
 
-Return ONLY a JSON array (no markdown, no prose) of 30 objects, each with this exact shape:
+Return ONLY a JSON object (no markdown, no prose) with this exact shape:
 {
-  "question": "string",
-  "options": ["string", "string", "string", "string"],
-  "correctIndex": 0
+  "questions": [
+    {
+      "question": "string",
+      "options": ["string", "string", "string", "string"],
+      "correctIndex": 0
+    }
+  ]
 }
 
-correctIndex is the 0-based index of the correct option in the options array. Vary correctIndex across questions (don't always put it at 0). Ensure questions are distinct from each other and cover different aspects of the topic.`;
+The "questions" array must contain exactly 10 objects. correctIndex is the 0-based index of the correct option in the options array. Vary correctIndex across questions (don't always put it at 0). Ensure questions are distinct from each other and cover different aspects of the topic.`;
 
     const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
@@ -31,11 +35,11 @@ correctIndex is the 0-based index of the correct option in the options array. Va
 
     const questions = Array.isArray(parsed) ? parsed : parsed.questions;
 
-    if (!questions) {
-        throw new Error("AI did not return 30 questions");
+    if (!questions || questions.length === 0) {
+        throw new Error("AI did not return 10 questions");
     }
 
-    return questions.slice(0, 30).map(q => ({
+    return questions.slice(0, 10).map(q => ({
         question: q.question,
         options: q.options,
         correctIndex: q.correctIndex,

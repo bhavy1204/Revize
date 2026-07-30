@@ -471,7 +471,7 @@ const TaskDetails = () => {
                 onClose={() => setQuizTarget(null)}
                 onPassed={() => {
                   // refetch this task's detail, not the whole task list
-                  fetchTaskDetails(); // or whatever your detail-fetch function is called
+                  // fetchTaskDetails(); // or whatever your detail-fetch function is called
                   setQuizTarget(null);
                 }}
               />
