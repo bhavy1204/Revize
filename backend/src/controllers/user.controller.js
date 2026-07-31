@@ -56,6 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 const sendOtp = asyncHandler(async (req, res) => {
+    console.log("OTP REACHED")
     const { email } = req.body;
 
     if (!email || !email.includes("@")) {

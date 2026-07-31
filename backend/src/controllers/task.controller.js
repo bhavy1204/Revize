@@ -166,7 +166,6 @@ const startRevisionQuiz = asyncHandler(async (req, res) => {
         const existingQuestions = task.questionBank.filter(q =>
             revision.quiz.questionIds.some(id => id.equals(q._id))
         );
-        await task.save();
         return res.status(200).json(new APIResponse(200, {
             questions: existingQuestions.map(q => ({ _id: q._id, question: q.question, options: q.options }))
         }, "Quiz already in progress"));

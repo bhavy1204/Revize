@@ -382,17 +382,21 @@ const TaskDetails = () => {
                           const today = new Date();
                           today.setHours(0, 0, 0, 0);
 
-                         const firstPendingIndex = revisions.findIndex(
-                           (rev) => {
-                             const scheduled = new Date(rev.scheduledAt);
-                             scheduled.setHours(0, 0, 0, 0);
+                          const firstPendingIndex = revisions.findIndex(
+                            (rev) => {
+                              const scheduled = new Date(rev.scheduledAt);
+                              scheduled.setHours(0, 0, 0, 0);
 
-                             return !rev.completedAt && scheduled <= today;
-                           },
-                         );
-                          {console.log("First pending index : ",firstPendingIndex)
-                            console.log("today : ",today)
-                            console.log("scheduled : ",scheduledText)
+                              return !rev.completedAt && scheduled <= today;
+                            },
+                          );
+                          {
+                            console.log(
+                              "First pending index : ",
+                              firstPendingIndex,
+                            );
+                            console.log("today : ", today);
+                            console.log("scheduled : ", scheduledText);
                           }
                           return (
                             <div
@@ -470,9 +474,7 @@ const TaskDetails = () => {
                 revisionIndex={quizTarget.revisionIndex}
                 onClose={() => setQuizTarget(null)}
                 onPassed={() => {
-                  // refetch this task's detail, not the whole task list
-                  // fetchTaskDetails(); // or whatever your detail-fetch function is called
-                  setQuizTarget(null);
+                  // fetchTaskDetails();
                 }}
               />
             )}
