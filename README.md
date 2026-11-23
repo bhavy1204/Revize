@@ -2,6 +2,8 @@
 
 **Revize** is a web-based task management application designed to leverage the power of **spaced repetition**. It helps users retain information and manage tasks effectively by scheduling revisions at optimal intervals.
 
+This is an edit done by CI pipeline.
+
 ## 🚀 Features
 
 - **Smart Scheduling**: Automatically schedules revisions for tasks based on a scientifically proven spaced repetition algorithm (intervals: 1, 3, 7, 14, 30, 60 days).
